@@ -1,4 +1,5 @@
 const db = require('./database');
+const jwt = require('jsonwebtoken');
 
 class Users {
   constructor() {
@@ -56,7 +57,7 @@ class Users {
 
   insert(email, password) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (email, password) VALUES (?, ?, ?)';
+      const query = 'INSERT INTO user (email, password) VALUES (?, ?)';
       db.connection.query(query, [password, email], (err, results) => {
         if (err) {
           return reject(err);
@@ -73,10 +74,28 @@ class Users {
         if (err) {
           return reject(err);
         }
-        resolve(results);
+        if (results.length > 0) {
+          const user = results[0];
+          const token = this.generateJWT(user);
+          resolve({ token });
+        } else {
+          reject(new Error('Invalid email or password'));
+        }
       });
     });
   }
+
+  generateJWT(user) {
+    const payload = {
+      id: user.id,
+      email: user.email,
+      role: user.role
+    };
+    const secret = process.env.JWT_SECRET || 'your_jwt_secret';
+    const options = { expiresIn: '1h' };
+    return jwt.sign(payload, secret, options);
+  }
+
 
   getAllUsers() {
     return new Promise((resolve, reject) => {

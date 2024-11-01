@@ -14,15 +14,28 @@ router.get('/', (req, res) => {
   res.send('Welcome!');
 });
 
-router.get('/users', async (req, res) => {
+router.post('/register', async (req, res) => {
+  const { email, password } = req.body;
   try {
-    const results = await users.getAllUsers();
-    res.json(results);
+    await users.insert(password, email);
+    res.status(201).send('User registered successfully');
   } catch (err) {
-    console.error('Error retrieving users:', err);
+    console.error('Error registering user:', err);
     res.status(500).send('Server error');
   }
 });
+
+router.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  try {
+    const { user, token } = await users.login(email, password);
+    res.json({ user, token });
+  } catch (err) {
+    console.error('Error logging in:', err);
+    res.status(401).send('Invalid email or password');
+  }
+});
+
 
 app.use(`/${apiPath}`, router);
 
