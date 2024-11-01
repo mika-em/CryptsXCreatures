@@ -10,7 +10,7 @@ export default function HomePage() {
     const userEmail = localStorage.getItem("userEmail");
     header.textContent = isLoggedIn() && userEmail
         ? `Hello, ${userEmail}!`
-        : "Welcome to Crypts X Creatures";
+        : "Welcome to Crypts X Creatures!";
 
     const loginButton = document.createElement("button");
     loginButton.classList.add("btn", "btn-primary", "me-2");
