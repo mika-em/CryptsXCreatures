@@ -19,6 +19,8 @@ class Users {
           email VARCHAR(255) NOT NULL,
           role ENUM('admin', 'user') DEFAULT 'user',
           call_count INT DEFAULT 0,
+          recovery_question VARCHAR(255) NOT NULL,
+          recovery_answer VARCHAR(255) NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         )
       `;
@@ -39,10 +41,10 @@ class Users {
 
   seedTable() {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (email, password, role) VALUES ?';
+      const query = 'INSERT INTO user (email, password, role, recovery_question, recovery_answer) VALUES ?';
       const values = [
-        ['john@john.com', '123', 'user'],
-        ['admin@admin.com', '111', 'admin']
+        ['john@john.com', '123', 'user', 'What is your pet\'s name?', 'Fluffy'],
+        ['admin@admin.com', '111', 'admin', 'What is your mother\'s maiden name?', 'Potato']
       ];
       db.connection.query(query, [values], (err, results) => {
         if (err) {
@@ -55,14 +57,14 @@ class Users {
   }
 
 
-  insert(email, password) {
+  insert(password, email, recovery_question, recovery_answer) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (email, password) VALUES (?, ?)';
-      db.connection.query(query, [password, email], (err, results) => {
+      const query = 'INSERT INTO user (password, email, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
+      db.connection.query(query, [password, email, recovery_question, recovery_answer], (err, results) => {
         if (err) {
           return reject(err);
         }
-        resolve();
+        resolve(results);
       });
     });
   }
@@ -77,13 +79,63 @@ class Users {
         if (results.length > 0) {
           const user = results[0];
           const token = this.generateJWT(user);
-          resolve({ token });
+          resolve({ email, token });
         } else {
           reject(new Error('Invalid email or password'));
         }
       });
     });
   }
+
+  getRecoveryQuestion(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT recovery_question FROM user WHERE email = ?';
+      db.connection.query(query, [email], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results.length > 0) {
+          resolve(results[0].recovery_question);
+        } else {
+          reject(new Error('Email not found'));
+        }
+      });
+    });
+  }
+
+  verifyRecoveryAnswer(email, answer) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT id, recovery_answer FROM user WHERE email = ?';
+      db.connection.query(query, [email], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results.length > 0 && results[0].recovery_answer === answer) {
+          const token = this.generateResetToken({ id: results[0].id, email });
+          resolve({ isValid: true, token });
+        } else {
+          console.log('results:', results);
+          console.log('answer:', answer);
+          console.log('results[0].recovery_answer:', results[0].recovery_answer);
+          resolve({ isValid: false });
+        }
+      });
+    });
+  }
+
+  resetPassword(email, newPassword) {
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE user SET password = ? WHERE email = ?';
+      db.connection.query(query, [newPassword, email], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results);
+      });
+    });
+  }
+
+
 
   generateJWT(user) {
     const payload = {
@@ -96,10 +148,16 @@ class Users {
     return jwt.sign(payload, secret, options);
   }
 
+  generateResetToken(payload) {
+    const secret = process.env.JWT_SECRET || 'your_jwt_secret';
+    const options = { expiresIn: '5m' };
+    return jwt.sign(payload, secret, options);
+  }
+
 
   getAllUsers() {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM user';
+      const query = 'SELECT email, role FROM user';
       db.connection.query(query, (err, results) => {
         if (err) {
           return reject(err);
