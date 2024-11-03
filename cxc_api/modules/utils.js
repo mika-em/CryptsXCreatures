@@ -4,9 +4,8 @@ class Utils {
   static setCookie(res, name, value, options = {}) {
     const defaultOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      maxAge: 3600000,
-      sameSite: 'Lax'
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000, // 1 hour
     };
     const cookieOptions = { ...defaultOptions, ...options };
     res.cookie(name, value, cookieOptions);
