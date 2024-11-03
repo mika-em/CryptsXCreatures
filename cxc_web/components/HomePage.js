@@ -1,4 +1,4 @@
-import { navigateTo, isLoggedIn, logout } from "./app.js";
+import { navigateTo, isLoggedIn, logout } from "../app.js";
 
 export default function HomePage() {
     const container = document.createElement("div");
