@@ -12,12 +12,12 @@ export default function LoginForm() {
         <div class="mb-3">
             <label for="password" class="form-label">Password:</label>
             <input type="password" id="loginPassword" class="form-control" required>
-        </div>
-        <button type="submit" class="btn btn-primary w-100">Login</button>
+              </div>
+        <button type="submit"F class="btn btn-primary w-100">Login</button>
         <p id="loginMessage" class="text-center mt-3"></p>
     `;
 
-  form.onsubmit = async e => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPassword").value;
@@ -26,7 +26,7 @@ export default function LoginForm() {
       const response = await fetch("https://cheryl-lau.com/cxc/api/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const message = document.getElementById("loginMessage");

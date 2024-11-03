@@ -2,7 +2,7 @@
 
 import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/LoginForm.js";
-import RegistrationForm from "./components/RegistrationForm.js"
+import RegistrationForm from "./components/RegistrationForm.js";
 
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
@@ -16,23 +16,23 @@ function navigateTo(route) {
 }
 
 function router() {
-    const path = window.location.pathname;
-  
-    if (path === "/login" && isLoggedIn()) {
-      window.location.href = "/";
-    } else if (path === "/register" && isLoggedIn()) {
-      window.location.href = "/";
-    } else if (path === "/register") {
-      renderComponent(RegistrationForm);
-    } else if (path === "/login") {
-      renderComponent(LoginForm);
-    } else {
-      renderComponent(HomePage);
-    }
+  const path = window.location.pathname;
+
+  if (path === "/login" && isLoggedIn()) {
+    window.location.href = "/";
+  } else if (path === "/register" && isLoggedIn()) {
+    window.location.href = "/";
+  } else if (path === "/register") {
+    renderComponent(RegistrationForm);
+  } else if (path === "/login") {
+    renderComponent(LoginForm);
+  } else {
+    renderComponent(HomePage);
   }
+}
 
 function isLoggedIn() {
-    return localStorage.getItem("token") !== null;
+  return localStorage.getItem("token") !== null;
 }
 
 function logout() {
