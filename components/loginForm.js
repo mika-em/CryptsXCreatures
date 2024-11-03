@@ -1,4 +1,4 @@
-import { navigateTo } from "../app.js";
+import { navigateTo } from "./app.js";
 
 export default function LoginForm() {
   const form = document.createElement("form");
