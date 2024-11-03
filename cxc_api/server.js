@@ -61,8 +61,12 @@ router.post('/register', async (req, res) => {
     await users.insert(email, password, recovery_question, recovery_answer);
     res.status(201).send('User registered successfully');
   } catch (err) {
-    console.error('Error registering user:', err);
-    res.status(500).send('Server error');
+    if (err.message === 'Email already exists') {
+      res.status(409).send('Email already exists');
+    } else {
+      console.error('Error registering user:', err);
+      res.status(500).send('Server error');
+    }
   }
 });
 
@@ -87,7 +91,6 @@ router.get('/admin/users', verifyJWT, checkAdminRole, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
 
 
 router.get('/forgotpassword', async (req, res) => {
@@ -142,10 +145,6 @@ router.post('/resetpassword', verifyResetToken, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
-
-
 
 app.use(`/${apiPath}`, router);
 
