@@ -39,7 +39,7 @@ export default function RegistrationForm() {
     const confirmPassword = document.getElementById("confirmPassword").value;
     const recoveryQuestion = document.getElementById("recoveryQuestion").value;
     const recoveryAnswer = document.getElementById("recoveryAnswer").value;
-    const message = document.getElementById("registerMessage").value;
+    const message = document.getElementById("registerMessage");
 
     if (password !== confirmPassword) {
       message.textContent = "The passwords don't match!";
@@ -60,13 +60,13 @@ export default function RegistrationForm() {
 
       if (response.ok) {
         message.textContent = "Successfully registerd!";
-        const data = await response.json();
+        const data = await response.text();
         localStorage.setItem("token", data.token);
       } else {
         message.textContent = "Registration failed.";
       }
     } catch (e) {
-      message.textContent = "Error: " + e.message;
+      console.log = "Error: " + e.message;
     }
   };
 
