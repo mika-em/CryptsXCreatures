@@ -4,10 +4,11 @@ const app = express();
 const cors = require("cors");
 const port = process.env.PORT || 3000;
 const apiPath = Utils.apiPath;
-const db = require("./modules/database");
-const users = require("./modules/users");
-const jwt = require("jsonwebtoken");
-const cookieParser = require("cookie-parser");
+const db = require('./modules/database');
+const users = require('./modules/users');
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+const StoryGenerator = require('./modules/storyGenerator');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -95,7 +96,7 @@ router.get("/admin/users", verifyJWT, checkAdminRole, async (req, res) => {
   }
 });
 
-router.post('/logout', (res) => {
+router.post('/logout', (req, res) => {
   Utils.invalidateCookie(res, 'token');
   res.status(200).send('Logged out successfully.');
 });
@@ -160,7 +161,16 @@ router.post("/resetpassword", verifyResetToken, async (req, res) => {
   }
 });
 
-
+router.post('/generate', async (req, res) => {
+  const { prompt } = req.body;
+  try {
+    const story = await StoryGenerator.generateStory(prompt);
+    res.json(story);
+  } catch (err) {
+    console.error('Error generating story:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 app.use(`/${apiPath}`, router);
 
