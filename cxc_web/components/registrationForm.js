@@ -62,13 +62,11 @@ export default function RegistrationForm() {
         message.textContent = "Successfully registerd!";
         const data = await response.json();
         localStorage.setItem("token", data.token);
-        console.log("Response :", textData);
       } else {
         message.textContent = "Registration failed.";
       }
-    } catch (error) {
-      console.log("Error during registration:", error);
-      message = "Error: " + error.message;
+    } catch (e) {
+      message.textContent = "Error: " + e.message;
     }
   };
 
