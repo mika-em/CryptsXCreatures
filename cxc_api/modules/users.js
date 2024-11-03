@@ -16,7 +16,7 @@ class Users {
         CREATE TABLE IF NOT EXISTS user (
           id INT AUTO_INCREMENT PRIMARY KEY,
           password VARCHAR(255) NOT NULL,
-          email VARCHAR(255) NOT NULL,
+          email VARCHAR(255) NOT NULL UNIQUE,
           role ENUM('admin', 'user') DEFAULT 'user',
           call_count INT DEFAULT 0,
           recovery_question VARCHAR(255) NOT NULL,
@@ -57,17 +57,20 @@ class Users {
   }
 
 
-  insert(password, email, recovery_question, recovery_answer) {
-    return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (password, email, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
-      db.connection.query(query, [password, email, recovery_question, recovery_answer], (err, results) => {
-        if (err) {
-          return reject(err);
+insert(email, password, recovery_question, recovery_answer) {
+  return new Promise((resolve, reject) => {
+    const query = 'INSERT INTO user (email, password, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
+    db.connection.query(query, [email, password, recovery_question, recovery_answer], (err, results) => {
+      if (err) {
+        if (err.code === 'ER_DUP_ENTRY') {
+          return reject(new Error('Email already exists'));
         }
-        resolve(results);
-      });
+        return reject(err);
+      }
+      resolve(results);
     });
-  }
+  });
+}
 
   login(email, password) {
     return new Promise((resolve, reject) => {
@@ -79,7 +82,7 @@ class Users {
         if (results.length > 0) {
           const user = results[0];
           const token = this.generateJWT(user);
-          resolve({ email, token });
+          resolve({ email: user.email, token });
         } else {
           reject(new Error('Invalid email or password'));
         }
@@ -135,8 +138,6 @@ class Users {
     });
   }
 
-
-
   generateJWT(user) {
     const payload = {
       id: user.id,
@@ -153,7 +154,6 @@ class Users {
     const options = { expiresIn: '5m' };
     return jwt.sign(payload, secret, options);
   }
-
 
   getAllUsers() {
     return new Promise((resolve, reject) => {

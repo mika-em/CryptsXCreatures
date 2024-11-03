@@ -7,11 +7,13 @@ const apiPath = Utils.apiPath;
 const db = require('./modules/database');
 const users = require('./modules/users');
 const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
 
 app.use(express.json());
+app.use(cookieParser());
 
 const corsOptions = {
-  origin: '*', 
+  origin: '*',
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204
@@ -23,7 +25,7 @@ const router = express.Router();
 
 // Middleware to verify JWT
 const verifyJWT = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const token = req.cookies.token;
   if (!token) {
     return res.status(401).send('Access denied. No token provided.');
   }
@@ -36,32 +38,60 @@ const verifyJWT = (req, res, next) => {
   });
 };
 
+const checkAdminRole = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).send('Access denied. Admins only.');
+  }
+};
 
-router.get('/', verifyJWT, (req, res) => {
+
+router.get('/', (req, res) => {
+  res.send('Welcome!');
+});
+
+router.get('/verifyjwt', verifyJWT, (res) => {
   res.send('Welcome!');
 });
 
 router.post('/register', async (req, res) => {
   const { email, password, recovery_question, recovery_answer } = req.body;
   try {
-    await users.insert(password, email, recovery_question, recovery_answer);
+    await users.insert(email, password, recovery_question, recovery_answer);
     res.status(201).send('User registered successfully');
   } catch (err) {
-    console.error('Error registering user:', err);
-    res.status(500).send('Server error');
+    if (err.message === 'Email already exists') {
+      res.status(409).send('Email already exists');
+    } else {
+      console.error('Error registering user:', err);
+      res.status(500).send('Server error');
+    }
   }
-});;
+});
 
 router.post('/login', async (req, res) => {
   const { email, password } = req.body;
   try {
-    const { user, token } = await users.login(email, password);
-    res.json({ email, token });
+    const { email: userEmail, token } = await users.login(email, password);
+    Utils.setCookie(res, 'token', token);
+    res.json({ email: userEmail });
   } catch (err) {
     console.error('Error logging in:', err);
     res.status(401).send('Invalid email or password');
   }
 });
+
+router.get('/admin/users', verifyJWT, checkAdminRole, async (req, res) => {
+  try {
+    const results = await users.getAllUsers();
+    res.json(results);
+  } catch (err) {
+    console.error('Error retrieving users:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 router.get('/forgotpassword', async (req, res) => {
   const { email } = req.query;
@@ -79,9 +109,10 @@ router.post('/verifyanswer', async (req, res) => {
   try {
     const { isValid, token } = await users.verifyRecoveryAnswer(email, answer);
     if (isValid) {
-      res.json({ message: 'Answer verified. You can now reset your password.', token });
+      Utils.setCookie(res, 'resetToken', token);
+      res.json({ message: 'Answer verified. You can now reset your password.' });
     } else {
-      res.status(401).send(`Invalid answer.${isValid}`);
+      res.status(401).send('Invalid answer.');
     }
   } catch (err) {
     console.error('Error verifying recovery answer:', err);
@@ -90,7 +121,7 @@ router.post('/verifyanswer', async (req, res) => {
 });
 
 const verifyResetToken = (req, res, next) => {
-  const token = req.headers['authorization']?.split(' ')[1];
+  const token = req.cookies.resetToken;
   if (!token) {
     return res.status(401).send('Access denied. No token provided.');
   }
@@ -108,16 +139,13 @@ router.post('/resetpassword', verifyResetToken, async (req, res) => {
   const { email, newPassword } = req.body;
   try {
     await users.resetPassword(email, newPassword);
+    Utils.invalidateCookie(res, 'resetToken');
     res.status(200).send('Password reset successfully.');
   } catch (err) {
     console.error('Error resetting password:', err);
     res.status(500).send('Server error');
   }
 });
-
-
-
-
 
 app.use(`/${apiPath}`, router);
 
