@@ -32,7 +32,7 @@ export default function HomePage() {
     container.innerHTML = "";
     container.appendChild(header);
 
-    if (isLoggedIn()) {
+    if (isLoggedIn) {
       container.appendChild(logoutButton);
     } else {
       container.appendChild(loginButton);
