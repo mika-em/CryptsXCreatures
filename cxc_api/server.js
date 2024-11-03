@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: ['http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'https://www.cryptsxcreatures.com'],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: "*",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true,
   optionsSuccessStatus: 204,
 };
@@ -54,8 +54,8 @@ router.get("/", (req, res) => {
   res.send("Welcome!");
 });
 
-router.get('/verifyjwt', verifyJWT, (req, res) => {
-  res.send('Welcome!');
+router.get("/verifyjwt", verifyJWT, (res) => {
+  res.send("Welcome!");
 });
 
 router.post("/register", async (req, res) => {
@@ -95,13 +95,7 @@ router.get("/admin/users", verifyJWT, checkAdminRole, async (req, res) => {
   }
 });
 
-router.post('/logout', (res) => {
-  Utils.invalidateCookie(res, 'token');
-  res.status(200).send('Logged out successfully.');
-});
-
-
-router.get('/forgotpassword', async (req, res) => {
+router.get("/forgotpassword", async (req, res) => {
   const { email } = req.query;
   try {
     const question = await users.getRecoveryQuestion(email);
