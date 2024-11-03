@@ -14,48 +14,58 @@ function navigateTo(route) {
   router();
 }
 
-function router() {
+async function router() {
   const path = window.location.pathname;
+  const isAuthenticated = await checkLoginStatus();
 
-  if (path === "/login" && isLoggedIn()) {
-    window.location.href = "/";
-  } else if (path === "/register" && isLoggedIn()) {
-    window.location.href = "/";
-  } else if (path === "/forgotpassword") {
-    renderComponent(ForgotPasswordForm);
-  } else if (path === "/register") {
-    renderComponent(RegistrationForm);
-  } else if (path === "/login") {
-    renderComponent(LoginForm);
+  if (!isAuthenticated && path !== "/login") {
+    navigateTo("/login");
+  } else if (isAuthenticated && path === "/login") {
+    navigateTo("/");
   } else {
-    renderComponent(HomePage);
+    switch (path) {
+      case "/login":
+        renderComponent(LoginForm);
+        break;
+      case "/register":
+        renderComponent(RegistrationForm);
+        break;
+      case "/forgotpassword":
+        renderComponent(ForgotPasswordForm);
+        break;
+      default:
+        renderComponent(HomePage);
+        break;
+    }
   }
 }
 
-export function setCookie(name, value, days) {
-  const date = new Date();
-  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
-  const expires = `expires=${date.toUTCString()}`;
-  document.cookie = `${name}=${value}; ${expires}; path=/`;
-}
-
-function getCookie(name) {
-  const cookies = document.cookie.split("; ");
-  for (let cookie of cookies) {
-    const [key, val] = cookie.split("=");
-    if (key === name) return val;
+export async function checkLoginStatus() {
+  try {
+    const response = await fetch("/verifyjwt", { credentials: "include" });
+    return response.ok;
+  } catch (e) {
+    console.log("Error checking login status");
+    return false;
   }
-  return null;
 }
 
-export function isLoggedIn() {
-  return getCookie("token") !== null;
-}
+export async function logout() {
+  try {
+    const response = await fetch("/logout", {
+      method: "POST",
+      credentials: "include",
+    });
 
-export function logout() {
-  document.cookie = "token=; Max-Age=0; path=/";
-  localStorage.removeItem("userEmail");
-  window.location.href = "/";
+    if (response.ok) {
+      localStorage.removeItem("userEmail");
+      window.location.href = "/login";
+    } else {
+      console.log("Logout failed", await response.text());
+    }
+  } catch (e) {
+    console.log("Error during logout:", e);
+  }
 }
 
 window.onpopstate = router;

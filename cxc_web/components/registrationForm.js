@@ -15,7 +15,7 @@ export default function RegistrationForm() {
         <p id="registerMessage" class="text-center mt-3"></p>
     `;
 
-  form.onsubmit = async e => {
+  form.onsubmit = async (e) => {
     e.preventDefault();
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
@@ -33,7 +33,7 @@ export default function RegistrationForm() {
       const response = await fetch("https://cheryl-lau.com/cxc/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
       const message = document.getElementById("registerMessage");
@@ -43,8 +43,7 @@ export default function RegistrationForm() {
         const data = await response.json();
         localStorage.setItem("token", data.token);
       } else {
-        message.textContent =
-          "Registration failed";
+        message.textContent = "Registration failed";
       }
     } catch (e) {
       message.textContent = "Error: " + e.message;

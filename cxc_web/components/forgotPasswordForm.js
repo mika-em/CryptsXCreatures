@@ -37,20 +37,27 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
     const emailMessage = document.getElementById("emailMessage");
-    const recoveryQuestionContainer = document.getElementById("recoveryQuestionContainer");
+    const recoveryQuestionContainer = document.getElementById(
+      "recoveryQuestionContainer",
+    );
     const recoveryQuestion = document.getElementById("recoveryQuestion");
 
     try {
-      const response = await fetch(`https://cheryl-lau.com/cxc/api/forgotpassword?email=${email}`);
+      const response = await fetch(
+        `https://cheryl-lau.com/cxc/api/forgotpassword?email=${email}`,
+      );
 
       if (response.ok) {
         const data = await response.json();
         emailMessage.textContent = "";
         recoveryQuestion.textContent = data.question;
         recoveryQuestionContainer.style.display = "block";
-        document.getElementById("getRecoveryQuestionButton").style.display = "none";
+        document.getElementById("getRecoveryQuestionButton").style.display =
+          "none";
         document.getElementById("emailSection").style.display = "none";
-        document.getElementById("recoveryAnswer").setAttribute("required", "true");
+        document
+          .getElementById("recoveryAnswer")
+          .setAttribute("required", "true");
       } else {
         emailMessage.textContent = "No user found with that email address.";
       }
@@ -66,14 +73,19 @@ export default function ForgotPasswordForm() {
     const email = document.getElementById("forgotEmail").value;
     const answer = document.getElementById("recoveryAnswer").value;
     const answerMessage = document.getElementById("answerMessage");
-    const passwordResetContainer = document.getElementById("passwordResetContainer");
+    const passwordResetContainer = document.getElementById(
+      "passwordResetContainer",
+    );
 
     try {
-      const response = await fetch("https://cheryl-lau.com/cxc/api/verifyanswer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, answer }),
-      });
+      const response = await fetch(
+        "https://cheryl-lau.com/cxc/api/verifyanswer",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, answer }),
+        },
+      );
 
       if (response.ok) {
         const data = await response.json();
@@ -81,7 +93,9 @@ export default function ForgotPasswordForm() {
         setCookie("newToken", data.token, 0.08);
         passwordResetContainer.style.display = "block";
         document.getElementById("newPassword").setAttribute("required", "true");
-        document.getElementById("confirmNewPassword").setAttribute("required", "true");
+        document
+          .getElementById("confirmNewPassword")
+          .setAttribute("required", "true");
       } else {
         answerMessage.textContent = "Incorrect answer. Please try again.";
       }
@@ -96,7 +110,8 @@ export default function ForgotPasswordForm() {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
     const newPassword = document.getElementById("newPassword").value;
-    const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+    const confirmNewPassword =
+      document.getElementById("confirmNewPassword").value;
     const resetMessage = document.getElementById("resetMessage");
 
     if (newPassword !== confirmNewPassword) {
@@ -106,14 +121,17 @@ export default function ForgotPasswordForm() {
 
     try {
       const token = getCookie("newToken");
-      const response = await fetch("https://cheryl-lau.com/cxc/api/resetpassword", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+      const response = await fetch(
+        "https://cheryl-lau.com/cxc/api/resetpassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ email, newPassword }),
         },
-        body: JSON.stringify({ email, newPassword }),
-      });
+      );
 
       if (response.ok) {
         resetMessage.textContent = "Password reset successful! Please log in.";
