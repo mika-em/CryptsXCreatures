@@ -38,6 +38,14 @@ const verifyJWT = (req, res, next) => {
   });
 };
 
+const checkAdminRole = (req, res, next) => {
+  if (req.user && req.user.role === 'admin') {
+    next();
+  } else {
+    res.status(403).send('Access denied. Admins only.');
+  }
+};
+
 
 router.get('/', (req, res) => {
   res.send('Welcome!');
@@ -69,6 +77,18 @@ router.post('/login', async (req, res) => {
     res.status(401).send('Invalid email or password');
   }
 });
+
+router.get('/admin/users', verifyJWT, checkAdminRole, async (req, res) => {
+  try {
+    const results = await users.getAllUsers();
+    res.json(results);
+  } catch (err) {
+    console.error('Error retrieving users:', err);
+    res.status(500).send('Server error');
+  }
+});
+
+
 
 router.get('/forgotpassword', async (req, res) => {
   const { email } = req.query;
