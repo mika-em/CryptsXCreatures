@@ -57,10 +57,10 @@ class Users {
   }
 
 
-  insert(password, email, recovery_question, recovery_answer) {
+  insert(email, password, recovery_question, recovery_answer) {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (password, email, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
-      db.connection.query(query, [password, email, recovery_question, recovery_answer], (err, results) => {
+      const query = 'INSERT INTO user (email, password, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
+      db.connection.query(query, [email, password, recovery_question, recovery_answer], (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -79,7 +79,7 @@ class Users {
         if (results.length > 0) {
           const user = results[0];
           const token = this.generateJWT(user);
-          resolve({ email, token });
+          resolve({ email: user.email , token });
         } else {
           reject(new Error('Invalid email or password'));
         }
