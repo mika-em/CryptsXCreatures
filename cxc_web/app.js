@@ -53,7 +53,7 @@ export function isLoggedIn() {
 }
 
 export function logout() {
-  document.cookie = "token=; Max-Age=0; path=/"; // Deletes the cookie
+  document.cookie = "token=; Max-Age=0; path=/";
   localStorage.removeItem("userEmail");
   window.location.href = "/";
 }
