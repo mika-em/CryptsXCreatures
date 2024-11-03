@@ -11,8 +11,5 @@
       "src": "/(.*)",
       "dest": "cxc_web/server.js"
     }
-  ],
-  "static": {
-    "src": "cxc_web"
-  }
+  ]
 }
