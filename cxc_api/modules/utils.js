@@ -6,14 +6,21 @@ class Utils {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600000,
-      sameSite: 'Lax'
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
     };
     const cookieOptions = { ...defaultOptions, ...options };
     res.cookie(name, value, cookieOptions);
   }
 
-  static invalidateCookie(res, name) {
-    res.clearCookie(name);
+  static invalidateCookie(res, name, options = {}) {
+    const defaultOptions = {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      maxAge: 0
+    };
+    const cookieOptions = { ...defaultOptions, ...options };
+    res.clearCookie(name, cookieOptions);
   }
 }
 
