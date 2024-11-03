@@ -19,6 +19,16 @@ export default function RegistrationForm() {
     e.preventDefault();
     const email = document.getElementById("registerEmail").value;
     const password = document.getElementById("registerPassword").value;
+    const confirmPassword = document.getElementById("confirmPassword").value;
+    const recoveryQuestion = document.getElementById("recoveryQuestion").value;
+    const recoveryAnswer = document.getElementById("recoveryAnswer").value;
+    const message = document.getElementById("registerMessage").value;
+
+    if (password !== confirmPassword) {
+      message.textContent = "The passwords don't match!";
+      return;
+    }
+
     try {
       const response = await fetch("https://cheryl-lau.com/cxc/api/register", {
         method: "POST",
@@ -29,27 +39,15 @@ export default function RegistrationForm() {
       const message = document.getElementById("registerMessage");
 
       if (response.ok) {
-        const contentType = response.headers.get("Content-Type");
-
-        if (contentType && contentType.includes("application/json")) {
-          const data = await response.json();
-          message.textContent = "Registration successful! Please log in.";
-          console.log("Success. Token:", data.token);
-          localStorage.setItem("token", data.token);
-        } else {
-          const textData = await response.text();
-          message.textContent =
-            textData || "Registration successful! Please log in.";
-          console.log("Response :", textData);
-        }
+        message.textContent = "Successfully registerd!";
+        const data = await response.json();
+        localStorage.setItem("token", data.token);
       } else {
         message.textContent =
           "Registration failed";
       }
-    } catch (error) {
-      console.log("Error during registration:", error);
-      document.getElementById("registerMessage").textContent =
-        "Error: " + error.message;
+    } catch (e) {
+      message.textContent = "Error: " + e.message;
     }
   };
 
