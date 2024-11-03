@@ -139,6 +139,7 @@ router.post('/resetpassword', verifyResetToken, async (req, res) => {
   const { email, newPassword } = req.body;
   try {
     await users.resetPassword(email, newPassword);
+    Utils.invalidateCookie(res, 'resetToken');
     res.status(200).send('Password reset successfully.');
   } catch (err) {
     console.error('Error resetting password:', err);

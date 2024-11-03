@@ -10,6 +10,10 @@ class Utils {
     const cookieOptions = { ...defaultOptions, ...options };
     res.cookie(name, value, cookieOptions);
   }
+
+  static invalidateCookie(res, name) {
+    res.clearCookie(name);
+  }
 }
 
 module.exports = Utils;
