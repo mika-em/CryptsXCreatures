@@ -1,8 +1,8 @@
 // TODO: use cookies instead of tokens
 
-import HomePage from "./HomePage.js";
-import LoginForm from "./LoginForm.js";
-import RegistrationForm from "./RegistrationForm.js"
+import HomePage from "./components/HomePage.js";
+import LoginForm from "./components/LoginForm.js";
+import RegistrationForm from "./components/RegistrationForm.js"
 
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
