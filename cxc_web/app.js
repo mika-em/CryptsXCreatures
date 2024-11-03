@@ -1,4 +1,4 @@
-import HomePage from "./components/homePage.js";
+import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/loginForm.js";
 import RegistrationForm from "./components/registrationForm.js";
 import ForgotPasswordForm from "./components/forgotPasswordForm.js";
