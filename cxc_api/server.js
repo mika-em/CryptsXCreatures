@@ -92,6 +92,11 @@ router.get('/admin/users', verifyJWT, checkAdminRole, async (req, res) => {
   }
 });
 
+router.post('/logout', (res) => {
+  Utils.invalidateCookie(res, 'token');
+  res.status(200).send('Logged out successfully.');
+});
+
 
 router.get('/forgotpassword', async (req, res) => {
   const { email } = req.query;
