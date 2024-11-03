@@ -1,4 +1,4 @@
-import { navigateTo, setCookie, getCookie } from "../app.js";
+import { navigateTo } from "../app.js";
 
 export default function ForgotPasswordForm() {
   const form = document.createElement("form");
@@ -32,7 +32,6 @@ export default function ForgotPasswordForm() {
     </div>
   `;
 
-  // Step 1: Get Recovery Question
   form.onsubmit = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
@@ -67,7 +66,6 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  // Step 2: Verify Recovery Answer
   form.querySelector("#verifyAnswer").onclick = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
@@ -84,13 +82,12 @@ export default function ForgotPasswordForm() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, answer }),
+          credentials: "include", 
         },
       );
 
       if (response.ok) {
-        const data = await response.json();
         answerMessage.textContent = "";
-        setCookie("newToken", data.token, 0.08);
         passwordResetContainer.style.display = "block";
         document.getElementById("newPassword").setAttribute("required", "true");
         document
@@ -105,7 +102,6 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  // Step 3: Reset Password
   form.querySelector("#resetPassword").onclick = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
@@ -120,7 +116,6 @@ export default function ForgotPasswordForm() {
     }
 
     try {
-      const token = getCookie("newToken");
       const response = await fetch(
         "https://cheryl-lau.com/cxc/api/resetpassword",
         {
@@ -130,6 +125,7 @@ export default function ForgotPasswordForm() {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ email, newPassword }),
+          credentials: "include",
         },
       );
 
