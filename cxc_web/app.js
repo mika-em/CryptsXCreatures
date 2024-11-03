@@ -71,4 +71,4 @@ export async function logout() {
 window.onpopstate = router;
 document.addEventListener("DOMContentLoaded", router);
 
-export { navigateTo, getCookie };
+export { navigateTo };

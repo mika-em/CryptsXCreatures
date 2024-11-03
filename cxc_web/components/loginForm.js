@@ -1,4 +1,4 @@
-import { navigateTo, setCookie } from "../app.js";
+import { navigateTo } from "../app.js";
 
 export default function LoginForm() {
   const form = document.createElement("form");
@@ -30,19 +30,18 @@ export default function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include"
       });
 
       if (response.ok) {
-        const data = await response.json();
         message.textContent = "Login successful!";
-        setCookie("token", data.token, 1);
         localStorage.setItem("userEmail", email);
         navigateTo("/");
       } else {
         message.textContent = "Login failed. Please check your credentials.";
       }
-    } catch (error) {
-      message.textContent = "Error: " + error.message;
+    } catch (e) {
+      message.textContent = "Error: " + e.message;
     }
   };
 
