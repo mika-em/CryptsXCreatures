@@ -59,7 +59,7 @@ export async function logout() {
 
     if (response.ok) {
       localStorage.removeItem("userEmail");
-      window.location.href = "/login";
+      window.location.href = "/";
     } else {
       const errorText = await response.text();
       console.log("Logout failed:", errorText);
