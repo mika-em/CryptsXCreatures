@@ -55,7 +55,6 @@ export default function RegistrationForm() {
       });
 
       if (response.ok) {
-        // Check content type before parsing JSON
         const contentType = response.headers.get("content-type");
         if (contentType && contentType.includes("application/json")) {
           const data = await response.json();
@@ -64,6 +63,7 @@ export default function RegistrationForm() {
         } else {
           const text = await response.text();
           message.textContent = text || "Successfully registered!";
+          message.classList.remove("text-danger");
           message.classList.add("text-success");
         }
       } else {

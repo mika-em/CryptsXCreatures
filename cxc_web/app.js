@@ -1,7 +1,10 @@
+//TODO: put all user facing strings in a separate file
+
 import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/loginForm.js";
 import RegistrationForm from "./components/registrationForm.js";
 import ForgotPasswordForm from "./components/forgotPasswordForm.js";
+import StoryPage from "./components/StoryPage.js";
 
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
@@ -31,6 +34,8 @@ async function router() {
       case "/forgotpassword":
         renderComponent(ForgotPasswordForm);
         break;
+      case "/storypage":
+        renderComponent(StoryPage);
       default:
         renderComponent(HomePage);
         break;
@@ -52,7 +57,6 @@ export async function checkLoginStatus() {
       return false;
     }
     return true;
-
   } catch (e) {
     console.error("Unexpected error checking login status:", e);
     return false;

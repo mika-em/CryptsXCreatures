@@ -25,6 +25,15 @@ export default function HomePage() {
     renderButtons(false);
   };
 
+    const storyPageLink = document.createElement("a");
+  storyPageLink.href = "#";
+  storyPageLink.classList.add("btn", "btn-success", "mt-3", "mb-4");
+  storyPageLink.textContent = STRINGS.storyPageLink;
+  storyPageLink.onclick = (e) => {
+    e.preventDefault();
+    navigateTo("/storypage");
+  };
+
   async function renderButtons(isLoggedIn) {
     const email = localStorage.getItem("userEmail");
     header.textContent =
@@ -36,6 +45,7 @@ export default function HomePage() {
     container.appendChild(header);
 
     if (isLoggedIn) {
+      container.appendChild(storyPageLink);
       container.appendChild(logoutButton);
     } else {
       container.appendChild(loginButton);
