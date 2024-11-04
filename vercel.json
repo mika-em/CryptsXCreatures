@@ -13,7 +13,13 @@
     },
     {
       "src": "/404",
-      "dest": "cxc_web/components/NotFound.js"
+      "dest": "cxc_web/components/NotFoundPage.js"
+    },
+    {
+      "src": "/(.*)",
+      "methods": ["GET"],
+      "status": 404,
+      "dest": "cxc_web/components/NotFoundPage.js"
     }
   ]
 }
