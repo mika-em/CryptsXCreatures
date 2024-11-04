@@ -18,32 +18,37 @@ async function router() {
   const path = window.location.pathname;
   const isAuthenticated = await checkLoginStatus();
 
-  if (!isAuthenticated && path !== "/login") {
-    navigateTo("/login");
-  } else if (isAuthenticated && path === "/login") {
-    navigateTo("/");
-  } else {
-    switch (path) {
-      case "/login":
-        renderComponent(LoginForm);
-        break;
-      case "/register":
-        renderComponent(RegistrationForm);
-        break;
-      case "/forgotpassword":
-        renderComponent(ForgotPasswordForm);
-        break;
-      default:
-        renderComponent(HomePage);
-        break;
-    }
+  if (isAuthenticated && (path === "/login" || path === "/register")) {
+    return navigateTo("/");
+  }
+
+  switch (path) {
+    case "/login":
+      renderComponent(LoginForm);
+      break;
+    case "/register":
+      renderComponent(RegistrationForm);
+      break;
+    case "/forgotpassword":
+      renderComponent(ForgotPasswordForm);
+      break;
+    default:
+      renderComponent(HomePage);
+      break;
   }
 }
 
 export async function checkLoginStatus() {
   try {
-    const response = await fetch("/verifyjwt", { credentials: "include" });
-    return response.ok;
+    const res = await fetch("https://cheryl-lau.com/cxc/api/verifyjwt", {
+      credentials: "include",
+    });
+    if (res.ok) {
+      console.log("User is authenticated");
+    } else {
+      console.log("Auth failed with status: ", res.status);
+    }
+    return res.ok;
   } catch (e) {
     console.log("Error checking login status");
     return false;
@@ -52,7 +57,7 @@ export async function checkLoginStatus() {
 
 export async function logout() {
   try {
-    const response = await fetch("/logout", {
+    const response = await fetch("https://cheryl-lau.com/cxc/api/logout", {
       method: "POST",
       credentials: "include",
     });
@@ -61,7 +66,9 @@ export async function logout() {
       localStorage.removeItem("userEmail");
       window.location.href = "/login";
     } else {
-      console.log("Logout failed", await response.text());
+      console.log("Logout failed", response);
+      const errorText = await response.text();
+      console.log("Response text:", errorText);
     }
   } catch (e) {
     console.log("Error during logout:", e);

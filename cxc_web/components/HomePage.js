@@ -23,12 +23,15 @@ export default function HomePage() {
   logoutButton.onclick = () => {
     logout();
     renderButtons(false);
-  }
+  };
 
   async function renderButtons(isLoggedIn) {
     const email = localStorage.getItem("userEmail");
-    header.textContent = isLoggedIn && email ? `Hello, ${email}!`   : "Welcome to Crypts x Creatures!"
-    
+    header.textContent =
+      isLoggedIn && email
+        ? `Hello, ${email}!`
+        : "Welcome to Crypts x Creatures!";
+
     container.innerHTML = "";
     container.appendChild(header);
 

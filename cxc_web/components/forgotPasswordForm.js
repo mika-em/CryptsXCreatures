@@ -74,6 +74,9 @@ export default function ForgotPasswordForm() {
     const passwordResetContainer = document.getElementById(
       "passwordResetContainer",
     );
+    const recoveryQuestionContainer = document.getElementById(
+      "recoveryQuestionContainer",
+    );
 
     try {
       const response = await fetch(
@@ -82,12 +85,13 @@ export default function ForgotPasswordForm() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email, answer }),
-          credentials: "include", 
+          credentials: "include",
         },
       );
 
       if (response.ok) {
         answerMessage.textContent = "";
+        recoveryQuestionContainer.style.display = "none";
         passwordResetContainer.style.display = "block";
         document.getElementById("newPassword").setAttribute("required", "true");
         document
@@ -112,6 +116,8 @@ export default function ForgotPasswordForm() {
 
     if (newPassword !== confirmNewPassword) {
       resetMessage.textContent = "Passwords do not match!";
+      resetMessage.classList.remove("text-success");
+      resetMessage.classList.add("text-danger");
       return;
     }
 
@@ -122,7 +128,6 @@ export default function ForgotPasswordForm() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({ email, newPassword }),
           credentials: "include",
@@ -130,8 +135,14 @@ export default function ForgotPasswordForm() {
       );
 
       if (response.ok) {
-        resetMessage.textContent = "Password reset successful! Please log in.";
-        navigateTo("/login");
+        resetMessage.innerHTML = `Password reset successful! <a href="/login" class="text-primary">Click here to log in</a>.`;
+        resetMessage.classList.remove("text-danger");
+        resetMessage.classList.add("text-success");
+        document.getElementById("newPassword").setAttribute("disabled", "true");
+        document
+          .getElementById("confirmNewPassword")
+          .setAttribute("disabled", "true");
+        form.querySelector("#resetPassword").style.display = "none";
       } else {
         resetMessage.textContent = "Password reset failed. Try again.";
       }

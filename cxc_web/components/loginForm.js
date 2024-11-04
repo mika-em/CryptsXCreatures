@@ -30,7 +30,7 @@ export default function LoginForm() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
-        credentials: "include"
+        credentials: "include",
       });
 
       if (response.ok) {
@@ -38,10 +38,12 @@ export default function LoginForm() {
         localStorage.setItem("userEmail", email);
         navigateTo("/");
       } else {
+        console.log("Login response:", await response.text());
         message.textContent = "Login failed. Please check your credentials.";
       }
     } catch (e) {
-      message.textContent = "Error: " + e.message;
+      console.log("Error during login:", e);
+      message.textContent = "There was an error. Please try again later.";
     }
   };
 
