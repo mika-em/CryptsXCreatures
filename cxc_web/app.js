@@ -64,11 +64,10 @@ export async function logout() {
 
     if (response.ok) {
       localStorage.removeItem("userEmail");
-      window.location.href = "/login";
+      window.location.href = "/";
     } else {
-      console.log("Logout failed", response);
       const errorText = await response.text();
-      console.log("Response text:", errorText);
+      console.log("Error:", errorText);
     }
   } catch (e) {
     console.log("Error during logout:", e);
