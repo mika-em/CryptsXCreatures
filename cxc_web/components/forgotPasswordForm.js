@@ -1,31 +1,31 @@
-import { navigateTo } from "../app.js";
+import UI_STRINGS from "../lang/en/user.js";
 
 export default function ForgotPasswordForm() {
   const form = document.createElement("form");
   form.classList.add("bg-white", "p-4", "rounded", "shadow");
 
   form.innerHTML = `
-    <h2 class="text-center mb-4">Forgot Password</h2>
+    <h2 class="text-center mb-4">${UI_STRINGS.forgotPassword}</h2>
     <div id="emailSection" class="mb-3">
-      <label for="forgotEmail" class="form-label">Email:</label>
+      <label for="forgotEmail" class="form-label">${UI_STRINGS.email}</label>
       <input type="email" id="forgotEmail" name="forgotEmail" class="form-control" required>
     </div>
     <p id="emailMessage" class="text-danger text-center mt-2"></p>
-    <button type="submit" id="getRecoveryQuestionButton" class="btn btn-primary w-100">Get Recovery Question</button>
+    <button type="submit" id="getRecoveryQuestionButton" class="btn btn-primary w-100">${UI_STRINGS.getRecoveryQuestion}</button>
 
     <div id="recoveryQuestionContainer" class="mt-3" style="display: none;">
-      <label class="form-label">Recovery Question:</label>
+      <label class="form-label">${UI_STRINGS.recoveryQuestion}</label>
       <p id="recoveryQuestion" class="text-muted"></p>
-      <label for="recoveryAnswer" class="form-label">Answer:</label>
+      <label for="recoveryAnswer" class="form-label">${UI_STRINGS.recoveryAnswer}</label>
       <input type="text" id="recoveryAnswer" name="recoveryAnswer" class="form-control">
       <p id="answerMessage" class="text-danger mt-2"></p> 
-      <button id="verifyAnswer" class="btn btn-secondary w-100 mt-2">Submit Answer</button>
+      <button id="verifyAnswer" class="btn btn-secondary w-100 mt-2">${UI_STRINGS.submitAnswer}</button>
     </div>
 
     <div id="passwordResetContainer" class="mt-3" style="display: none;">
-      <label for="newPassword" class="form-label">New Password:</label>
+      <label for="newPassword" class="form-label"${UI_STRINGS.newPassword}</label>
       <input type="password" id="newPassword" name="newPassword" class="form-control">
-      <label for="confirmNewPassword" class="form-label mt-2">Confirm New Password:</label>
+      <label for="confirmNewPassword" class="form-label mt-2">${UI_STRINGS.confirmNewPassword}</label>
       <input type="password" id="confirmNewPassword" name="confirmNewPassword" class="form-control">
       <p id="resetMessage" class="text-danger mt-2"></p> 
       <button id="resetPassword" class="btn btn-success w-100 mt-2">Reset Password</button>
@@ -58,10 +58,10 @@ export default function ForgotPasswordForm() {
           .getElementById("recoveryAnswer")
           .setAttribute("required", "true");
       } else {
-        emailMessage.textContent = "No user found with that email address.";
+        emailMessage.textContent = UI_STRINGS.noUserFound;
       }
     } catch (e) {
-      emailMessage.textContent = "Error. Please try again later";
+      emailMessage.textContent = UI_STRINGS.errorOccurred;
       console.log(e);
     }
   };
@@ -98,10 +98,10 @@ export default function ForgotPasswordForm() {
           .getElementById("confirmNewPassword")
           .setAttribute("required", "true");
       } else {
-        answerMessage.textContent = "Incorrect answer. Please try again.";
+        answerMessage.textContent = UI_STRINGS.incorrectAnswer;
       }
     } catch (e) {
-      answerMessage.textContent = "Error. Please try again later";
+      answerMessage.textContent = UI_STRINGS.errorOccurred;
       console.log(e);
     }
   };
@@ -144,10 +144,10 @@ export default function ForgotPasswordForm() {
           .setAttribute("disabled", "true");
         form.querySelector("#resetPassword").style.display = "none";
       } else {
-        resetMessage.textContent = "Password reset failed. Try again.";
+        resetMessage.textContent = UI_STRINGS.errorOccurred;
       }
     } catch (e) {
-      resetMessage.textContent = "Error. Please try again later";
+      resetMessage.textContent = UI_STRINGS.errorOccurred;
       console.log(e);
     }
   };

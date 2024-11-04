@@ -1,0 +1,26 @@
+.logo-image {
+  width: 50vw;
+  max-width: 600px;
+  height: auto;
+  margin-bottom: 2rem;
+}
+
+.buttons-container {
+  display: flex;
+  justify-content: center;
+  gap: 0.25rem;
+  margin-top: 0;
+}
+
+.buttons-container .btn {
+  margin: 0;
+  padding: 0.5rem 1rem;
+}
+
+@media (max-width: 768px) {
+  .logo-image {
+    width: 70vw;
+    max-width: 300px;
+    margin-bottom: 0.3rem; /* Smaller space for mobile */
+  }
+}

@@ -1,7 +1,10 @@
+//TODO: put all user facing strings in a separate file
+
 import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/loginForm.js";
 import RegistrationForm from "./components/registrationForm.js";
 import ForgotPasswordForm from "./components/forgotPasswordForm.js";
+import StoryPage from "./components/StoryPage.js";
 
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
@@ -16,25 +19,32 @@ function navigateTo(route) {
 
 async function router() {
   const path = window.location.pathname;
-  const isAuthenticated = await checkLoginStatus();
+  const isAuthenticated = await checkLoginStatus(); ;
 
-  if (isAuthenticated && (path === "/login" || path === "/register")) {
-    navigateTo("/");
-  } else {
-    switch (path) {
-      case "/login":
-        renderComponent(LoginForm);
-        break;
-      case "/register":
-        renderComponent(RegistrationForm);
-        break;
-      case "/forgotpassword":
-        renderComponent(ForgotPasswordForm);
-        break;
-      default:
-        renderComponent(HomePage);
-        break;
-    }
+  switch (path) {
+    case "/login":
+      renderComponent(LoginForm);
+      break;
+
+    case "/register":
+      renderComponent(RegistrationForm);
+      break;
+
+    case "/forgotpassword":
+      renderComponent(ForgotPasswordForm);
+      break;
+
+    case "/storypage":
+      if (isAuthenticated) {
+        renderComponent(StoryPage);
+      } else {
+        navigateTo("/login");
+      }
+      break;
+
+    default:
+      renderComponent(HomePage);
+      break;
   }
 }
 
@@ -43,9 +53,17 @@ export async function checkLoginStatus() {
     const response = await fetch("https://cheryl-lau.com/cxc/api/verifyjwt", {
       credentials: "include",
     });
-    return response.ok;
+
+    if (response.status === 200) {
+      console.log("Status:", response.status);
+      return true;
+    } else if (!response.ok) {
+      console.log("Unexpected response status:", response.status);
+      return false;
+    }
+    return true;
   } catch (e) {
-    console.log("Error checking login status");
+    console.error("Unexpected error checking login status:", e);
     return false;
   }
 }
