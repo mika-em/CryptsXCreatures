@@ -22,6 +22,12 @@ class Utils {
     const cookieOptions = { ...defaultOptions, ...options };
     res.clearCookie(name, cookieOptions);
   }
+
+  static hashString(string) {
+    const bcrypt = require('bcryptjs');
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(string, salt);
+  }
 }
 
 module.exports = Utils;

@@ -173,6 +173,7 @@ router.post('/generate', verifyJWT, async (req, res) => {
   }
 });
 
+
 app.use(`/${apiPath}`, router);
 
 (async () => {
