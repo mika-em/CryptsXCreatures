@@ -10,6 +10,10 @@
     {
       "src": "/(.*)",
       "dest": "cxc_web/server.js"
+    },
+    {
+      "src": "/404",
+      "dest": "cxc_web/components/NotFound.js"
     }
   ]
 }
