@@ -1,5 +1,7 @@
 const db = require("./database");
 const jwt = require("jsonwebtoken");
+const bcrypt = require('bcryptjs');
+const Utils = require("./utils");
 
 class Users {
   constructor() {
@@ -43,11 +45,13 @@ class Users {
     return new Promise((resolve, reject) => {
       const query =
         "INSERT INTO user (email, password, role, recovery_question, recovery_answer) VALUES ?";
+      const johnPassword = Utils.hashString('123');
+      const adminPassword = Utils.hashString('111');
       const values = [
-        ["john@john.com", "123", "user", "What is your pet's name?", "Fluffy"],
+        ["john@john.com", johnPassword, "user", "What is your pet's name?", "Fluffy"],
         [
           "admin@admin.com",
-          "111",
+          adminPassword,
           "admin",
           "What is your mother's maiden name?",
           "Potato",
@@ -67,9 +71,10 @@ class Users {
     return new Promise((resolve, reject) => {
       const query =
         "INSERT INTO user (email, password, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)";
+      const hashedPassword = Utils.hashString(password);
       db.connection.query(
         query,
-        [email, password, recovery_question, recovery_answer],
+        [email, hashedPassword, recovery_question, recovery_answer],
         (err, results) => {
           if (err) {
             if (err.code === "ER_DUP_ENTRY") {
@@ -85,17 +90,22 @@ class Users {
 
   login(email, password) {
     return new Promise((resolve, reject) => {
-      const query = "SELECT * FROM user WHERE email = ? AND password = ?";
-      db.connection.query(query, [email, password], (err, results) => {
+      const query = 'SELECT * FROM user WHERE email = ?';
+      db.connection.query(query, [email], async (err, results) => {
         if (err) {
           return reject(err);
         }
         if (results.length > 0) {
           const user = results[0];
-          const token = this.generateJWT(user);
-          resolve({ email: user.email, token });
+          const match = await bcrypt.compare(password, user.password); // Compare the provided password with the hashed password
+          if (match) {
+            const token = this.generateJWT(user);
+            resolve({ email: user.email, token });
+          } else {
+            reject(new Error('Invalid email or password'));
+          }
         } else {
-          reject(new Error("Invalid email or password"));
+          reject(new Error('Invalid email or password'));
         }
       });
     });
@@ -143,7 +153,8 @@ class Users {
   resetPassword(email, newPassword) {
     return new Promise((resolve, reject) => {
       const query = "UPDATE user SET password = ? WHERE email = ?";
-      db.connection.query(query, [newPassword, email], (err, results) => {
+      const hashedPassword = Utils.hashString(newPassword);
+      db.connection.query(query, [hashedPassword, email], (err, results) => {
         if (err) {
           return reject(err);
         }
