@@ -43,9 +43,18 @@ export async function checkLoginStatus() {
     const response = await fetch("https://cheryl-lau.com/cxc/api/verifyjwt", {
       credentials: "include",
     });
-    return response.ok;
+
+    if (response.status === 401) {
+      console.log("Status:", response.status);
+      return false;
+    } else if (!response.ok) {
+      console.log("Unexpected response status:", response.status);
+      return false;
+    }
+    return true;
+
   } catch (e) {
-    console.log("Error checking login status");
+    console.error("Unexpected error checking login status:", e);
     return false;
   }
 }
