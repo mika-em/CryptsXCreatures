@@ -5,7 +5,8 @@ class Utils {
     const defaultOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
-      maxAge: 3600000 // 1 hour
+      maxAge: 3600000,
+      sameSite: 'Lax'
     };
     const cookieOptions = { ...defaultOptions, ...options };
     res.cookie(name, value, cookieOptions);
