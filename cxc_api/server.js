@@ -13,8 +13,8 @@ app.use(express.json());
 app.use(cookieParser());
 
 const corsOptions = {
-  origin: "*",
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  origin: ['http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'https://www.cryptsxcreatures.com'],
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   optionsSuccessStatus: 204,
 };
@@ -54,8 +54,8 @@ router.get("/", (req, res) => {
   res.send("Welcome!");
 });
 
-router.get("/verifyjwt", verifyJWT, (res) => {
-  res.send("Welcome!");
+router.get('/verifyjwt', verifyJWT, (req, res) => {
+  res.send('Welcome!');
 });
 
 router.post("/register", async (req, res) => {
@@ -153,6 +153,7 @@ router.post("/resetpassword", verifyResetToken, async (req, res) => {
     res.status(500).send("Server error");
   }
 });
+
 
 
 app.use(`/${apiPath}`, router);
