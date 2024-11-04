@@ -1,4 +1,4 @@
-import { navigateTo, setCookie, getCookie } from "../app.js";
+import { navigateTo } from "../app.js";
 
 export default function ForgotPasswordForm() {
   const form = document.createElement("form");
@@ -32,25 +32,31 @@ export default function ForgotPasswordForm() {
     </div>
   `;
 
-  // Step 1: Get Recovery Question
   form.onsubmit = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
     const emailMessage = document.getElementById("emailMessage");
-    const recoveryQuestionContainer = document.getElementById("recoveryQuestionContainer");
+    const recoveryQuestionContainer = document.getElementById(
+      "recoveryQuestionContainer",
+    );
     const recoveryQuestion = document.getElementById("recoveryQuestion");
 
     try {
-      const response = await fetch(`https://cheryl-lau.com/cxc/api/forgotpassword?email=${email}`);
+      const response = await fetch(
+        `https://cheryl-lau.com/cxc/api/forgotpassword?email=${email}`,
+      );
 
       if (response.ok) {
         const data = await response.json();
         emailMessage.textContent = "";
         recoveryQuestion.textContent = data.question;
         recoveryQuestionContainer.style.display = "block";
-        document.getElementById("getRecoveryQuestionButton").style.display = "none";
+        document.getElementById("getRecoveryQuestionButton").style.display =
+          "none";
         document.getElementById("emailSection").style.display = "none";
-        document.getElementById("recoveryAnswer").setAttribute("required", "true");
+        document
+          .getElementById("recoveryAnswer")
+          .setAttribute("required", "true");
       } else {
         emailMessage.textContent = "No user found with that email address.";
       }
@@ -60,28 +66,37 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  // Step 2: Verify Recovery Answer
   form.querySelector("#verifyAnswer").onclick = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
     const answer = document.getElementById("recoveryAnswer").value;
     const answerMessage = document.getElementById("answerMessage");
-    const passwordResetContainer = document.getElementById("passwordResetContainer");
+    const passwordResetContainer = document.getElementById(
+      "passwordResetContainer",
+    );
+    const recoveryQuestionContainer = document.getElementById(
+      "recoveryQuestionContainer",
+    );
 
     try {
-      const response = await fetch("https://cheryl-lau.com/cxc/api/verifyanswer", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, answer }),
-      });
+      const response = await fetch(
+        "https://cheryl-lau.com/cxc/api/verifyanswer",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, answer }),
+          credentials: "include",
+        },
+      );
 
       if (response.ok) {
-        const data = await response.json();
         answerMessage.textContent = "";
-        setCookie("newToken", data.token, 0.08);
+        recoveryQuestionContainer.style.display = "none";
         passwordResetContainer.style.display = "block";
         document.getElementById("newPassword").setAttribute("required", "true");
-        document.getElementById("confirmNewPassword").setAttribute("required", "true");
+        document
+          .getElementById("confirmNewPassword")
+          .setAttribute("required", "true");
       } else {
         answerMessage.textContent = "Incorrect answer. Please try again.";
       }
@@ -91,33 +106,43 @@ export default function ForgotPasswordForm() {
     }
   };
 
-  // Step 3: Reset Password
   form.querySelector("#resetPassword").onclick = async (e) => {
     e.preventDefault();
     const email = document.getElementById("forgotEmail").value;
     const newPassword = document.getElementById("newPassword").value;
-    const confirmNewPassword = document.getElementById("confirmNewPassword").value;
+    const confirmNewPassword =
+      document.getElementById("confirmNewPassword").value;
     const resetMessage = document.getElementById("resetMessage");
 
     if (newPassword !== confirmNewPassword) {
       resetMessage.textContent = "Passwords do not match!";
+      resetMessage.classList.remove("text-success");
+      resetMessage.classList.add("text-danger");
       return;
     }
 
     try {
-      const token = getCookie("newToken");
-      const response = await fetch("https://cheryl-lau.com/cxc/api/resetpassword", {
-        method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+      const response = await fetch(
+        "https://cheryl-lau.com/cxc/api/resetpassword",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email, newPassword }),
+          credentials: "include",
         },
-        body: JSON.stringify({ email, newPassword }),
-      });
+      );
 
       if (response.ok) {
-        resetMessage.textContent = "Password reset successful! Please log in.";
-        navigateTo("/login");
+        resetMessage.innerHTML = `Password reset successful! <a href="/login" class="text-primary">Click here to log in</a>.`;
+        resetMessage.classList.remove("text-danger");
+        resetMessage.classList.add("text-success");
+        document.getElementById("newPassword").setAttribute("disabled", "true");
+        document
+          .getElementById("confirmNewPassword")
+          .setAttribute("disabled", "true");
+        form.querySelector("#resetPassword").style.display = "none";
       } else {
         resetMessage.textContent = "Password reset failed. Try again.";
       }

@@ -1,14 +1,14 @@
-const mysql = require('mysql');
+const mysql = require("mysql");
 
 class Database {
   constructor() {
     if (!Database.instance) {
       this.connection = mysql.createConnection({
-        host: process.env.DB_HOST || '127.0.0.1',
+        host: process.env.DB_HOST || "127.0.0.1",
         port: process.env.DB_PORT || 3306,
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
-        database: process.env.DB_NAME
+        database: process.env.DB_NAME,
       });
       Database.instance = this;
     }
@@ -20,10 +20,10 @@ class Database {
     return new Promise((resolve, reject) => {
       this.connection.connect((err) => {
         if (err) {
-          console.error('Error connecting to MySQL:', err);
+          console.error("Error connecting to MySQL:", err);
           return reject(err);
         }
-        console.log('Connected to MySQL');
+        console.log("Connected to MySQL");
         resolve();
       });
     });
@@ -31,7 +31,8 @@ class Database {
 
   checkDatabase(dbName) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?';
+      const query =
+        "SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = ?";
       this.connection.query(query, [dbName], (err, results) => {
         if (err) {
           return reject(err);
@@ -47,7 +48,8 @@ class Database {
 
   checkTable(dbName, tableName) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?';
+      const query =
+        "SELECT TABLE_NAME FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = ? AND TABLE_NAME = ?";
       this.connection.query(query, [dbName, tableName], (err, results) => {
         if (err) {
           return reject(err);
@@ -64,15 +66,15 @@ class Database {
   createDatabase(dbName) {
     return new Promise((resolve, reject) => {
       const connection = mysql.createConnection({
-        host: process.env.DB_HOST || '127.0.0.1',
+        host: process.env.DB_HOST || "127.0.0.1",
         port: process.env.DB_PORT,
         user: process.env.DB_USER,
-        password: process.env.DB_PASS
+        password: process.env.DB_PASS,
       });
 
       connection.connect((err) => {
         if (err) {
-          console.error('Error connecting to MySQL:', err);
+          console.error("Error connecting to MySQL:", err);
           return reject(err);
         }
 
@@ -99,11 +101,11 @@ class Database {
           await this.createDatabase(dbName);
           await this.close();
           this.connection = mysql.createConnection({
-            host: process.env.DB_HOST || '127.0.0.1',
+            host: process.env.DB_HOST || "127.0.0.1",
             port: process.env.DB_PORT || 3306,
             user: process.env.DB_USER,
             password: process.env.DB_PASS,
-            database: dbName
+            database: dbName,
           });
           await this.connect();
         }
@@ -118,22 +120,18 @@ class Database {
     });
   }
 
-
-
   close() {
     return new Promise((resolve, reject) => {
       this.connection.end((err) => {
         if (err) {
-          console.error('Error closing MySQL connection:', err);
+          console.error("Error closing MySQL connection:", err);
           return reject(err);
         }
-        console.log('MySQL connection closed');
+        console.log("MySQL connection closed");
         resolve();
       });
     });
   }
-
-
 }
 
 const instance = new Database();

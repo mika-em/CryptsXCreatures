@@ -1,5 +1,5 @@
-const db = require('./database');
-const jwt = require('jsonwebtoken');
+const db = require("./database");
+const jwt = require("jsonwebtoken");
 
 class Users {
   constructor() {
@@ -28,7 +28,7 @@ class Users {
         if (err) {
           return reject(err);
         }
-        console.log('Users table created or already exists');
+        console.log("Users table created or already exists");
         try {
           await this.seedTable();
           resolve();
@@ -41,40 +41,51 @@ class Users {
 
   seedTable() {
     return new Promise((resolve, reject) => {
-      const query = 'INSERT INTO user (email, password, role, recovery_question, recovery_answer) VALUES ?';
+      const query =
+        "INSERT INTO user (email, password, role, recovery_question, recovery_answer) VALUES ?";
       const values = [
-        ['john@john.com', '123', 'user', 'What is your pet\'s name?', 'Fluffy'],
-        ['admin@admin.com', '111', 'admin', 'What is your mother\'s maiden name?', 'Potato']
+        ["john@john.com", "123", "user", "What is your pet's name?", "Fluffy"],
+        [
+          "admin@admin.com",
+          "111",
+          "admin",
+          "What is your mother's maiden name?",
+          "Potato",
+        ],
       ];
       db.connection.query(query, [values], (err, results) => {
         if (err) {
           return reject(err);
         }
-        console.log('Users table seeded');
+        console.log("Users table seeded");
         resolve(results);
       });
     });
   }
 
-
-insert(email, password, recovery_question, recovery_answer) {
-  return new Promise((resolve, reject) => {
-    const query = 'INSERT INTO user (email, password, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)';
-    db.connection.query(query, [email, password, recovery_question, recovery_answer], (err, results) => {
-      if (err) {
-        if (err.code === 'ER_DUP_ENTRY') {
-          return reject(new Error('Email already exists'));
-        }
-        return reject(err);
-      }
-      resolve(results);
+  insert(email, password, recovery_question, recovery_answer) {
+    return new Promise((resolve, reject) => {
+      const query =
+        "INSERT INTO user (email, password, recovery_question, recovery_answer) VALUES (?, ?, ?, ?)";
+      db.connection.query(
+        query,
+        [email, password, recovery_question, recovery_answer],
+        (err, results) => {
+          if (err) {
+            if (err.code === "ER_DUP_ENTRY") {
+              return reject(new Error("Email already exists"));
+            }
+            return reject(err);
+          }
+          resolve(results);
+        },
+      );
     });
-  });
-}
+  }
 
   login(email, password) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM user WHERE email = ? AND password = ?';
+      const query = "SELECT * FROM user WHERE email = ? AND password = ?";
       db.connection.query(query, [email, password], (err, results) => {
         if (err) {
           return reject(err);
@@ -84,7 +95,7 @@ insert(email, password, recovery_question, recovery_answer) {
           const token = this.generateJWT(user);
           resolve({ email: user.email, token });
         } else {
-          reject(new Error('Invalid email or password'));
+          reject(new Error("Invalid email or password"));
         }
       });
     });
@@ -92,7 +103,7 @@ insert(email, password, recovery_question, recovery_answer) {
 
   getRecoveryQuestion(email) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT recovery_question FROM user WHERE email = ?';
+      const query = "SELECT recovery_question FROM user WHERE email = ?";
       db.connection.query(query, [email], (err, results) => {
         if (err) {
           return reject(err);
@@ -100,7 +111,7 @@ insert(email, password, recovery_question, recovery_answer) {
         if (results.length > 0) {
           resolve(results[0].recovery_question);
         } else {
-          reject(new Error('Email not found'));
+          reject(new Error("Email not found"));
         }
       });
     });
@@ -108,7 +119,7 @@ insert(email, password, recovery_question, recovery_answer) {
 
   verifyRecoveryAnswer(email, answer) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT id, recovery_answer FROM user WHERE email = ?';
+      const query = "SELECT id, recovery_answer FROM user WHERE email = ?";
       db.connection.query(query, [email], (err, results) => {
         if (err) {
           return reject(err);
@@ -117,9 +128,12 @@ insert(email, password, recovery_question, recovery_answer) {
           const token = this.generateResetToken({ id: results[0].id, email });
           resolve({ isValid: true, token });
         } else {
-          console.log('results:', results);
-          console.log('answer:', answer);
-          console.log('results[0].recovery_answer:', results[0].recovery_answer);
+          console.log("results:", results);
+          console.log("answer:", answer);
+          console.log(
+            "results[0].recovery_answer:",
+            results[0].recovery_answer,
+          );
           resolve({ isValid: false });
         }
       });
@@ -128,7 +142,7 @@ insert(email, password, recovery_question, recovery_answer) {
 
   resetPassword(email, newPassword) {
     return new Promise((resolve, reject) => {
-      const query = 'UPDATE user SET password = ? WHERE email = ?';
+      const query = "UPDATE user SET password = ? WHERE email = ?";
       db.connection.query(query, [newPassword, email], (err, results) => {
         if (err) {
           return reject(err);
@@ -142,22 +156,22 @@ insert(email, password, recovery_question, recovery_answer) {
     const payload = {
       id: user.id,
       email: user.email,
-      role: user.role
+      role: user.role,
     };
-    const secret = process.env.JWT_SECRET || 'your_jwt_secret';
-    const options = { expiresIn: '1h' };
+    const secret = process.env.JWT_SECRET || "your_jwt_secret";
+    const options = { expiresIn: "1h" };
     return jwt.sign(payload, secret, options);
   }
 
   generateResetToken(payload) {
-    const secret = process.env.JWT_SECRET || 'your_jwt_secret';
-    const options = { expiresIn: '5m' };
+    const secret = process.env.JWT_SECRET || "your_jwt_secret";
+    const options = { expiresIn: "5m" };
     return jwt.sign(payload, secret, options);
   }
 
   getAllUsers() {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT email, role FROM user';
+      const query = "SELECT email, role FROM user";
       db.connection.query(query, (err, results) => {
         if (err) {
           return reject(err);

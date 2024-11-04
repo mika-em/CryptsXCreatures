@@ -1,5 +1,5 @@
 class Utils {
-  static apiPath = 'cxc/api';
+  static apiPath = "cxc/api";
 
   static setCookie(res, name, value, options = {}) {
     const defaultOptions = {
