@@ -1,10 +1,10 @@
-//TODO: put all user facing strings in a separate file
 
 import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/loginForm.js";
 import RegistrationForm from "./components/registrationForm.js";
 import ForgotPasswordForm from "./components/forgotPasswordForm.js";
 import StoryPage from "./components/StoryPage.js";
+import NotFoundPage from "./components/NotFoundPage.js";
 
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
@@ -17,11 +17,16 @@ function navigateTo(route) {
   router();
 }
 
+
 async function router() {
   const path = window.location.pathname;
-  const isAuthenticated = await checkLoginStatus(); ;
+  const isAuthenticated = await checkLoginStatus();
 
   switch (path) {
+    case "/":
+      renderComponent(HomePage);
+      break;
+    
     case "/login":
       renderComponent(LoginForm);
       break;
@@ -41,9 +46,9 @@ async function router() {
         navigateTo("/login");
       }
       break;
-
+      
     default:
-      renderComponent(HomePage);
+      renderComponent(NotFoundPage);
       break;
   }
 }
