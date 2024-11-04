@@ -1,3 +1,4 @@
+import UI_STRINGS from "../lang/en/user.js";
 import { navigateTo, checkLoginStatus, logout } from "../app.js";
 
 export default function HomePage() {
@@ -9,26 +10,26 @@ export default function HomePage() {
 
   const loginButton = document.createElement("button");
   loginButton.classList.add("btn", "btn-primary", "me-2", "mt-3");
-  loginButton.textContent = "Login";
+  loginButton.textContent = UI_STRINGS.login;
   loginButton.onclick = () => navigateTo("/login");
 
   const registerButton = document.createElement("button");
   registerButton.classList.add("btn", "btn-secondary", "mt-3");
-  registerButton.textContent = "Register";
+  registerButton.textContent = UI_STRINGS.register;
   registerButton.onclick = () => navigateTo("/register");
 
   const logoutButton = document.createElement("button");
   logoutButton.classList.add("btn", "btn-danger");
-  logoutButton.textContent = "Logout";
+  logoutButton.textContent = UI_STRINGS.logout;
   logoutButton.onclick = () => {
     logout();
     renderButtons(false);
   };
 
-    const storyPageLink = document.createElement("a");
+  const storyPageLink = document.createElement("a");
   storyPageLink.href = "#";
   storyPageLink.classList.add("btn", "btn-success", "mt-3", "mb-4");
-  storyPageLink.textContent = STRINGS.storyPageLink;
+  storyPageLink.textContent = UI_STRINGS.storyPageLink;
   storyPageLink.onclick = (e) => {
     e.preventDefault();
     navigateTo("/storypage");
@@ -38,8 +39,8 @@ export default function HomePage() {
     const email = localStorage.getItem("userEmail");
     header.textContent =
       isLoggedIn && email
-        ? `Hello, ${email}!`
-        : "Welcome to Crypts x Creatures!";
+        ? UI_STRINGS.greeting(email)
+        : UI_STRINGS.welcomeMessage;
 
     container.innerHTML = "";
     container.appendChild(header);

@@ -1,4 +1,4 @@
-const USER_STRINGS = {
+const UI_STRINGS = {
     email: "Email:",
     password: "Password:",
     confirmPassword: "Confirm Password:",
@@ -46,4 +46,4 @@ const USER_STRINGS = {
     generatingText: "Generating...",
 };
 
-export default USER_STRINGS;
+export default UI_STRINGS;

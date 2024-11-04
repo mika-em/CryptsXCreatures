@@ -1,3 +1,4 @@
+import UI_STRINGS from "../lang/en/user.js";
 import { navigateTo } from "../app.js";
 
 export default function LoginForm() {
@@ -5,18 +6,18 @@ export default function LoginForm() {
   form.classList.add("bg-white", "p-4", "rounded", "shadow");
 
   form.innerHTML = `
-    <h2 class="text-center mb-4">Login</h2>
+    <h2 class="text-center mb-4">${UI_STRINGS.login}</h2>
     <div class="mb-3">
-      <label for="loginEmail" class="form-label">Email:</label>
+      <label for="loginEmail" class="form-label">${UI_STRINGS.email}</label>
       <input type="email" id="loginEmail" class="form-control" required>
     </div>
     <div class="mb-3">
-      <label for="loginPassword" class="form-label">Password:</label>
+      <label for="loginPassword" class="form-label">${UI_STRINGS.password}</label>
       <input type="password" id="loginPassword" class="form-control" required>
     </div>
-    <button type="submit" class="btn btn-primary w-100">Login</button>
+    <button type="submit" class="btn btn-primary w-100">${UI_STRINGS.login}</button>
     <p id="loginMessage" class="text-center mt-3 text-danger"></p>
-    <p class="text-center mt-3"><a href="#" id="forgotPasswordLink">Forgot Password?</a></p>
+    <p class="text-center mt-3"><a href="#" id="forgotPasswordLink">${UI_STRINGS.forgotPassword}</a></p>
   `;
 
   form.onsubmit = async (e) => {
@@ -34,16 +35,22 @@ export default function LoginForm() {
       });
 
       if (response.ok) {
-        message.textContent = "Login successful!";
+        message.textContent = UI_STRINGS.loginSuccess;
+        message.classList.remove("text-danger");
+        message.classList.add("text-primary");
         localStorage.setItem("userEmail", email);
         navigateTo("/");
       } else {
         console.log("Login response:", await response.text());
-        message.textContent = "Login failed. Please check your credentials.";
+        message.textContent = UI_STRINGS.loginFailed;
+        message.classList.remove("text-primary");
+        message.classList.add("text-danger");
       }
     } catch (e) {
       console.log("Error during login:", e);
-      message.textContent = "There was an error. Please try again later.";
+      message.textContent = UI_STRINGS.errorOccurred;
+      message.classList.remove("text-primary");
+      message.classList.add("text-danger");
     }
   };
 
