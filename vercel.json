@@ -8,16 +8,12 @@
   ],
   "routes": [
     {
-      "src": "/(.*)",
-      "dest": "/cxc_web/server.js"
-    },
-    {
       "src": "/404",
       "dest": "/cxc_web/components/NotFoundPage.js"
     },
     {
-      "src": "/.*",
-      "dest": "/cxc_web/index.html"
+      "src": "/(.*)",
+      "dest": "/cxc_web/server.js"
     }
   ]
 }
