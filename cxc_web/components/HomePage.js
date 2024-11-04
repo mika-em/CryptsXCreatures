@@ -10,7 +10,6 @@ export default function HomePage() {
   logoImage.alt = "Crypts x Creatures";
   logoImage.classList.add("logo-image");
   container.appendChild(logoImage);
-
   const buttonsContainer = document.createElement("div");
   buttonsContainer.classList.add("buttons-container");
 
@@ -39,22 +38,22 @@ export default function HomePage() {
     button.onclick = onClick;
     return button;
   }
-
   async function renderButtons(isLoggedIn) {
     buttonsContainer.innerHTML = "";
     buttonsContainer.appendChild(storyPageLink);
+
     if (isLoggedIn) {
       buttonsContainer.appendChild(logoutButton);
     } else {
       buttonsContainer.appendChild(loginButton);
       buttonsContainer.appendChild(registerButton);
     }
-    // Ensure buttons are added only once
+    
     if (!container.contains(buttonsContainer)) {
       container.appendChild(buttonsContainer);
     }
   }
-
   checkLoginStatus().then(renderButtons);
+  
   return container;
 }
