@@ -180,6 +180,34 @@ class Users {
       });
     });
   }
+
+  increaseCallCount(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'UPDATE user SET call_count = call_count + 1 WHERE email = ?';
+      db.connection.query(query, [email], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results);
+      });
+    });
+  }
+
+  getCallCount(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT call_count FROM user WHERE email = ?';
+      db.connection.query(query, [email], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        if (results.length > 0) {
+          resolve(results[0].call_count);
+        } else {
+          reject(new Error('Email not found'));
+        }
+      });
+    });
+  }
 }
 
 const instance = new Users();
