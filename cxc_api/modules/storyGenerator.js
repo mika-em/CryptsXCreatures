@@ -1,9 +1,10 @@
 const https = require('https');
 const { URL } = require('url');
 const { STORY_URL } = require('./constants');
+const User = require('./users');
 
 class StoryGenerator {
-  static generateStory(prompt) {
+  static generateStory(prompt, email) {
     return new Promise((resolve, reject) => {
       const data = JSON.stringify({ prompt });
 
@@ -20,8 +21,6 @@ class StoryGenerator {
         timeout: 30000,
       };
 
-      console.log('Request options:', options);
-
       const request = https.request(options, (response) => {
         let responseData = '';
 
@@ -29,10 +28,19 @@ class StoryGenerator {
           responseData += chunk;
         });
 
-        response.on('end', () => {
+      response.on('end', async () => {
           console.log('Response Data:', responseData);
           if (response.statusCode === 200) {
-            resolve(JSON.parse(responseData));
+            try {
+              await User.increaseCallCount(email);
+              const storyData = JSON.parse(responseData);
+              const callCount = await User.getCallCount(email);
+              storyData.callCount = callCount;
+              resolve(storyData);
+            } catch (err) {
+              console.error('Error increasing call count:', err);
+              reject(new Error('Error increasing call count'));
+            }
           } else {
             console.error('Error generating story:', responseData);
             reject(new Error('Error generating story'));

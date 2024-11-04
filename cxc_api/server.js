@@ -161,10 +161,11 @@ router.post("/resetpassword", verifyResetToken, async (req, res) => {
   }
 });
 
-router.post('/generate', async (req, res) => {
+router.post('/generate', verifyJWT, async (req, res) => {
   const { prompt } = req.body;
+  const email = req.user.email;
   try {
-    const story = await StoryGenerator.generateStory(prompt);
+    const story = await StoryGenerator.generateStory(prompt, email);
     res.json(story);
   } catch (err) {
     console.error('Error generating story:', err);
