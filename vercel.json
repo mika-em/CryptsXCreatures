@@ -9,17 +9,15 @@
   "routes": [
     {
       "src": "/(.*)",
-      "dest": "cxc_web/server.js"
+      "dest": "/cxc_web/server.js"
     },
     {
       "src": "/404",
-      "dest": "cxc_web/components/NotFoundPage.js"
+      "dest": "/cxc_web/components/NotFoundPage.js"
     },
     {
-      "src": "/(.*)",
-      "methods": ["GET"],
-      "status": 404,
-      "dest": "cxc_web/components/NotFoundPage.js"
+      "src": "/.*",
+      "dest": "/cxc_web/index.html"
     }
   ]
 }
