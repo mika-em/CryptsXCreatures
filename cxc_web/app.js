@@ -19,27 +19,32 @@ function navigateTo(route) {
 
 async function router() {
   const path = window.location.pathname;
-  const isAuthenticated = await checkLoginStatus();
+  const isAuthenticated = await checkLoginStatus(); ;
 
-  if (isAuthenticated && (path === "/login" || path === "/register")) {
-    navigateTo("/");
-  } else {
-    switch (path) {
-      case "/login":
-        renderComponent(LoginForm);
-        break;
-      case "/register":
-        renderComponent(RegistrationForm);
-        break;
-      case "/forgotpassword":
-        renderComponent(ForgotPasswordForm);
-        break;
-      case "/storypage":
+  switch (path) {
+    case "/login":
+      renderComponent(LoginForm);
+      break;
+
+    case "/register":
+      renderComponent(RegistrationForm);
+      break;
+
+    case "/forgotpassword":
+      renderComponent(ForgotPasswordForm);
+      break;
+
+    case "/storypage":
+      if (isAuthenticated) {
         renderComponent(StoryPage);
-      default:
-        renderComponent(HomePage);
-        break;
-    }
+      } else {
+        navigateTo("/login");
+      }
+      break;
+
+    default:
+      renderComponent(HomePage);
+      break;
   }
 }
 
@@ -49,9 +54,9 @@ export async function checkLoginStatus() {
       credentials: "include",
     });
 
-    if (response.status === 401) {
+    if (response.status === 200) {
       console.log("Status:", response.status);
-      return false;
+      return true;
     } else if (!response.ok) {
       console.log("Unexpected response status:", response.status);
       return false;

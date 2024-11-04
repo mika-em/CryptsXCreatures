@@ -5,54 +5,56 @@ export default function HomePage() {
   const container = document.createElement("div");
   container.classList.add("text-center");
 
-  const header = document.createElement("h1");
-  header.classList.add("display-4");
+  const logoImage = document.createElement("img");
+  logoImage.src = "./logo.png";
+  logoImage.alt = "Crypts x Creatures";
+  logoImage.classList.add("logo-image");
+  container.appendChild(logoImage);
 
-  const loginButton = document.createElement("button");
-  loginButton.classList.add("btn", "btn-primary", "me-2", "mt-3");
-  loginButton.textContent = UI_STRINGS.login;
-  loginButton.onclick = () => navigateTo("/login");
+  const buttonsContainer = document.createElement("div");
+  buttonsContainer.classList.add("buttons-container");
 
-  const registerButton = document.createElement("button");
-  registerButton.classList.add("btn", "btn-secondary", "mt-3");
-  registerButton.textContent = UI_STRINGS.register;
-  registerButton.onclick = () => navigateTo("/register");
-
-  const logoutButton = document.createElement("button");
-  logoutButton.classList.add("btn", "btn-danger");
-  logoutButton.textContent = UI_STRINGS.logout;
-  logoutButton.onclick = () => {
+  const loginButton = createButton("btn-primary", UI_STRINGS.login, () =>
+    navigateTo("/login"),
+  );
+  const registerButton = createButton(
+    "btn-secondary",
+    UI_STRINGS.register,
+    () => navigateTo("/register"),
+  );
+  const storyPageLink = createButton(
+    "btn-success",
+    UI_STRINGS.storyPageLink,
+    () => navigateTo("/storypage"),
+  );
+  const logoutButton = createButton("btn-danger", UI_STRINGS.logout, () => {
     logout();
     renderButtons(false);
-  };
+  });
 
-  const storyPageLink = document.createElement("a");
-  storyPageLink.href = "#";
-  storyPageLink.classList.add("btn", "btn-success", "mt-3", "mb-4");
-  storyPageLink.textContent = UI_STRINGS.storyPageLink;
-  storyPageLink.onclick = (e) => {
-    e.preventDefault();
-    navigateTo("/storypage");
-  };
+  function createButton(btnClass, text, onClick) {
+    const button = document.createElement("button");
+    button.classList.add("btn", btnClass);
+    button.textContent = text;
+    button.onclick = onClick;
+    return button;
+  }
 
   async function renderButtons(isLoggedIn) {
-    const email = localStorage.getItem("userEmail");
-    header.textContent =
-      isLoggedIn && email
-        ? UI_STRINGS.greeting(email)
-        : UI_STRINGS.welcomeMessage;
-
-    container.innerHTML = "";
-    container.appendChild(header);
-
+    buttonsContainer.innerHTML = "";
+    buttonsContainer.appendChild(storyPageLink);
     if (isLoggedIn) {
-      container.appendChild(storyPageLink);
-      container.appendChild(logoutButton);
+      buttonsContainer.appendChild(logoutButton);
     } else {
-      container.appendChild(loginButton);
-      container.appendChild(registerButton);
+      buttonsContainer.appendChild(loginButton);
+      buttonsContainer.appendChild(registerButton);
+    }
+    // Ensure buttons are added only once
+    if (!container.contains(buttonsContainer)) {
+      container.appendChild(buttonsContainer);
     }
   }
+
   checkLoginStatus().then(renderButtons);
   return container;
 }
