@@ -43,7 +43,7 @@ async function router() {
       if (isAuthenticated) {
         renderComponent(StoryPage);
       } else {
-        navigateTo("/login");
+        navigateTo("/");
       }
       break;
       
