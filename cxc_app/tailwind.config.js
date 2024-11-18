@@ -11,16 +11,22 @@ module.exports = {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
+      extend: {
+        fontFamily: {
+          title: ['Silkscreen', 'sans-serif'],
+          body: ['Anta', 'sans-serif'],
+        },
+      },
     },
   },
   plugins: [require('daisyui')],
   daisyui: {
     themes: ['light', 'dark', 'dracula'],
-    base: true, 
-    styled: true, 
-    utils: true, 
-    logs: true, 
+    base: true,
+    styled: true,
+    utils: true,
+    logs: true,
     rtl: false,
-    prefix: '', 
+    prefix: '',
   },
 };
