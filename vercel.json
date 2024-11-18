@@ -2,18 +2,14 @@
   "version": 2,
   "builds": [
     {
-      "src": "cxc_web/server.js",
-      "use": "@vercel/node"
+      "src": "cxc_app/next.config.mjs",
+      "use": "@vercel/next"
     }
   ],
   "routes": [
     {
-      "src": "/404",
-      "dest": "/cxc_web/components/NotFoundPage.js"
-    },
-    {
       "src": "/(.*)",
-      "dest": "/cxc_web/server.js"
+      "dest": "cxc_app/$1"
     }
   ]
 }
