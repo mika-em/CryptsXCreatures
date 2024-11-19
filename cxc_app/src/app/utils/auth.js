@@ -10,12 +10,6 @@ export async function register({
   recoveryQuestion,
   recoveryAnswer,
 }) {
-  console.log({
-    email,
-    password,
-    recoveryQuestion,
-    recoveryAnswer,
-  });
   return makeRequest('register', 'POST', {
     email,
     password,
@@ -23,3 +17,15 @@ export async function register({
     recovery_answer: recoveryAnswer,
   });
 }
+
+export const recovery = {
+  async getQuestion({ email }) {
+    return makeRequest(`forgotpassword?email=${email}`, 'GET');
+  },
+  async verifyAnswer({ email, answer }) {
+    return makeRequest('verifyanswer', 'POST', { email, answer });
+  },
+  async resetPassword({ email, newPassword }) {
+    return makeRequest('resetpassword', 'POST', { email, newPassword });
+  },
+};
