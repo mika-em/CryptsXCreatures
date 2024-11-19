@@ -1,5 +1,6 @@
-import { makeRequest } from './makeRequest';
+import { makeRequest } from './api';
 
 export async function generateStory(prompt) {
-  return makeRequest('generate', 'POST', { prompt });
+  const response = await makeRequest('generate', 'POST', { prompt });
+  return response.generated_text;
 }

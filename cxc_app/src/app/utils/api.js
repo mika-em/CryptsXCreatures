@@ -1,4 +1,4 @@
-import { API } from '../constants';
+import { API } from '../constants/api';
 
 export async function makeRequest(endpoint, method, data) {
   const res = await fetch(`${API}/${endpoint}`, {

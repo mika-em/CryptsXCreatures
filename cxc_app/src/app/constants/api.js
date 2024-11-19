@@ -1,3 +1,1 @@
-const API = 'https://cheryl-lau.com/cxc/api';
-
-export default API;
+export const API = 'https://cheryl-lau.com/cxc/api';

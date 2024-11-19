@@ -8,7 +8,7 @@ export function middleware(req) {
     return NextResponse.next();
   }
 
-  const token = req.cookies.token;
+  const token = req.cookies.get('token')?.value;
 
   if (!token) {
     const loginUrl = new URL('/login', req.nextUrl.origin);
@@ -20,5 +20,5 @@ export function middleware(req) {
 
 //applying middleware to these routes:
 export const config = {
-  matcher: ['story/:path*'],
+  matcher: [],
 };
