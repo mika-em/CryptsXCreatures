@@ -24,24 +24,6 @@ export default function StoryPage() {
         }
     }, [toastMessage]);
 
-    async function handleSubmit(e) {
-        e.preventDefault();
-        setLoading(true);
-        setToastMessage(null);
-
-        try {
-            const story = await generateStory(prompt);
-            setGeneratedText(story);
-            setToastMessage('Success!');
-            setToastType('success');
-        } catch (err) {
-            setToastMessage('There was an issue generating the story.');
-            setToastType('error');
-        } finally {
-            setLoading(false);
-        }
-    };
-
     const handleRecord = () => {
         const recording = !recordingInProgress;
         setRecordingInProgress(recording);
@@ -90,21 +72,44 @@ export default function StoryPage() {
 
     const playRecording = () => {
         if (audioBlob) {
+            console.log("Playing recording...", audioBlob);
             const audio = new Audio();
             audio.src = URL.createObjectURL(audioBlob);
             audio.play();
         }
     };
 
+    const uploadRecording = async () => {
+        setLoading(true);
+        try {
+            const apiUrl = "https://mumulumu.com/speech2text";
+            const formData = new FormData();
+            formData.append('audio_data', audioBlob, 'file');
+            
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'multipart/form-data'
+                },
+                body: formData
+            });
+            
+            setGeneratedText(response.json());      
+            setToastMessage('Success!');
+            setToastType('success');
+        } catch (err) {
+            setToastMessage('There was an issue generating the story.');
+            setToastType('error');
+          } finally {
+            setLoading(false);
+          }
+    }
+
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
             <h1 className="text-6xl bg-clip-text glowing-text text-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 font-bold pb-5 mb-6">
                 <Typewriter text="start your journey" delay={100} />
             </h1>
-            {/* <form
-                onSubmit={handleSubmit}
-                className="card w-1/3 bg-base-100 p-4 shadow-md"
-            > */}
             <div className="flex items-center justify-center space-x-4 w-20">
                 <button
                     id="record-button"
@@ -134,7 +139,23 @@ export default function StoryPage() {
                     </button>
                 )}
             </div>
-            {/* </form> */}
+            {audioBlob && (
+                <div className="pt-4">
+                    <button
+                        id="generate-button"
+                        type="submit"
+                        className={`btn w-64 h-20 text-base-content space-y-4 btn-primary ${loading ? 'btn-disabled' : ''}`}
+                        onClick={uploadRecording}
+                    >
+                        {
+                            loading ? (
+                                <span className="loading loading-lg loading-infinity"></span>
+                            ) : (
+                                'Generate'
+                            )}
+                    </button>
+                </div>
+            )}
             {generatedText && (
                 <div className="card mt-4 w-1/3 bg-base-100 p-4">
                     <p className="text-base-content text-xl">{generatedText}</p>
