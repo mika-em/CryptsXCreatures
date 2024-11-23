@@ -21,7 +21,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/story"
-              className="px-4 text-lg hover:text-yellow-300 transition-all font-medium"
+              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
               aria-label="Generate"
             >
               Generate
@@ -30,7 +30,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/login"
-              className="px-4 text-lg hover:text-yellow-300 transition-all font-medium"
+              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
               aria-label="Login"
             >
               Login
@@ -39,7 +39,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/register"
-              className="px-4 text-lg hover:text-yellow-300 transition-all font-medium"
+              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
               aria-label="Register"
             >
               Register

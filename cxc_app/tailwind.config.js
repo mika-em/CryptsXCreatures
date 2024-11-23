@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+
 module.exports = {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
@@ -13,15 +14,16 @@ module.exports = {
       },
       extend: {
         fontFamily: {
-          title: ['Silkscreen', 'sans-serif'],
-          body: ['Anta', 'sans-serif'],
+          sans: ['Open Sans'],
+          title: ['Silkscreen', 'cursive'], 
+          body: ['Open Sans', 'sans-serif'],
         },
       },
     },
   },
   plugins: [require('daisyui')],
   daisyui: {
-    themes: ['light', 'dark', 'dracula'],
+    themes: ['dark', 'dracula'],
     base: true,
     styled: true,
     utils: true,
