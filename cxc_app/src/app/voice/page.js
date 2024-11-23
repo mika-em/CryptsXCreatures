@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { generateStory } from '../utils/story';
 import Typewriter from '../components/typewriter';
 
+let audioChunks = [];
+
 export default function StoryPage() {
     const [prompt, setPrompt] = useState('');
     const [generatedText, setGeneratedText] = useState('');
@@ -14,7 +16,6 @@ export default function StoryPage() {
     const [mediaStream, setMediaStream] = useState(null);
     const [audioBlob, setAudioBlob] = useState(null);
     const [mediaRecorder, setMediaRecorder] = useState(null);
-    const [audioChunks, setAudioChunks] = useState([]);
 
     useEffect(() => {
         if (toastMessage) {
@@ -39,40 +40,46 @@ export default function StoryPage() {
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    const startRecord = async () => {
-        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        setLoading(true);
-        try {
-            const recorder = new MediaRecorder(stream);
-            setMediaRecorder(recorder);
-            setMediaStream(stream);
-            setRecordingInProgress(true);
-            setLoading(false);
-
-            recorder.ondataavailable = (event) => {
-                console.log("Data available", event);
-                setAudioChunks((prev) => [...prev, event.data]);
-            };
-
-            recorder.start();
-        } catch (error) {
-            console.error('Error accessing media devices.', error);
-            setLoading(false);
+    const handleRecord = () => {
+        const recording = !recordingInProgress;
+        setRecordingInProgress(recording);
+        if (recording) {
+            startRecord();
+        } else {
+            stopRecord();
         }
+    };
+
+    const startRecord = () => {
+        navigator.mediaDevices.getUserMedia({ audio: true })
+            .then(stream => {
+                try {
+                    const recorder = new MediaRecorder(stream);
+                    setMediaRecorder(recorder);
+                    setMediaStream(stream);
+
+                    recorder.addEventListener('dataavailable', event => {
+                        audioChunks = []; // Store only one chunk of audio data
+                        audioChunks.push(event.data);
+                    });
+
+                    recorder.start();
+                } catch (error) {
+                    console.error('Error accessing media devices.', error);
+                }
+            });
     };
 
     const stopRecord = () => {
         if (mediaRecorder) {
-            mediaRecorder.stop();
             mediaRecorder.onstop = () => {
-                console.log('Recording stopped.', audioChunks);
                 const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-                console.log('Audio URL:', audioBlob);
                 setAudioBlob(audioBlob);
-                setAudioChunks([]);
             };
+
+            mediaRecorder.stop();
         }
         if (mediaStream) {
             mediaStream.getTracks().forEach(track => track.stop());
@@ -83,7 +90,6 @@ export default function StoryPage() {
 
     const playRecording = () => {
         if (audioBlob) {
-            console.log('Playing audio...', audioBlob);
             const audio = new Audio();
             audio.src = URL.createObjectURL(audioBlob);
             audio.play();
@@ -99,40 +105,36 @@ export default function StoryPage() {
                 onSubmit={handleSubmit}
                 className="card w-1/3 bg-base-100 p-4 shadow-md"
             > */}
-            <div>
-
+            <div className="flex items-center justify-center space-x-4 w-20">
                 <button
                     id="record-button"
                     type="submit"
-                    className={`btn w-32 h-32 text-base-content btn-primary w-full ${loading ? 'btn-disabled' : ''}`}
-                    onMouseDown={startRecord}
-                    onMouseUp={stopRecord}
+                    className={`btn w-40 h-40 text-base-content ${recordingInProgress ? 'btn-secondary' : 'btn-primary'} ${loading ? 'btn-disabled' : ''}`}
+                    onClick={handleRecord}
                 >
                     {loading ? (
                         <span className="loading loading-lg loading-infinity"></span>
                     ) : (
-                        'Record'
+                        recordingInProgress ? 'Stop Recording' : 'Record'
                     )}
                 </button>
-                <button
-                    id="record-button"
-                    type="submit"
-                    className={`btn w-20 h-20 text-base-content btn-primary w-full ${loading ? 'btn-disabled' : ''}`}
-                    onClick={playRecording}
-                >
-                    {loading ? (
-                        <span className="loading loading-lg loading-infinity"></span>
-                    ) : (
-                        'Play'
-                    )}
-                </button>
+                {audioBlob && (
+                    <button
+                        id="record-button"
+                        type="submit"
+                        className={`btn w-20 h-20 text-base-content btn-primary ${loading ? 'btn-disabled' : ''}`}
+                        onClick={playRecording}
+                    >
+                        {
+                            loading ? (
+                                <span className="loading loading-lg loading-infinity"></span>
+                            ) : (
+                                'Play'
+                            )}
+                    </button>
+                )}
             </div>
             {/* </form> */}
-            {recordingInProgress && (
-                <div className="card">
-                    <p className="text-base-content text-xl">Recording in Progress</p>
-                </div>
-            )}
             {generatedText && (
                 <div className="card mt-4 w-1/3 bg-base-100 p-4">
                     <p className="text-base-content text-xl">{generatedText}</p>
