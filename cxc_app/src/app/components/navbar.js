@@ -45,6 +45,15 @@ export default function Navbar() {
               Register
             </Link>
           </li>
+          <li>
+            <Link
+              href="/admin"
+              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
+              aria-label="Admin"
+            >
+              Admin
+            </Link>
+          </li>
         </ul>
       </div>
     </div>

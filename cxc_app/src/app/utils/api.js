@@ -1,16 +1,27 @@
 import { API } from '../constants/api';
-
-export async function makeRequest(endpoint, method, data) {
-  const res = await fetch(`${API}/${endpoint}`, {
+export async function makeRequest(endpoint, method, data = null) {
+  const options = {
     method,
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(data),
     credentials: 'include',
-  });
+  };
+
+  if (data && method !== 'GET' && method !== 'HEAD') {
+    options.body = JSON.stringify(data);
+  }
+
+  const res = await fetch(`${API}/${endpoint}`, options);
 
   if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error.message || 'Request failed');
+    let errorMessage = 'Request failed';
+    const contentType = res.headers.get('content-type');
+    if (contentType && contentType.includes('application/json')) {
+      const errorData = await res.json();
+      errorMessage = errorData.message || JSON.stringify(errorData);
+    } else {
+      errorMessage = await res.text();
+    }
+    throw new Error(errorMessage);
   }
 
   const contentType = res.headers.get('content-type');
