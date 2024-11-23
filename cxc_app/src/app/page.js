@@ -8,7 +8,7 @@ export default function Home() {
       </h2>
       <h1 className="text-7xl glowing-text font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500">
         {' '}
-        <Typewriter text="Crypts x Creatures." delay={100} />
+        <Typewriter text="Crypts x Creatures" delay={100} />
       </h1>
     </div>
   );
