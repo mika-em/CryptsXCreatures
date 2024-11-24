@@ -18,8 +18,11 @@
 html,
 body {
   height: 100%;
+  width: 100%;
   margin: 0;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 body {
@@ -33,10 +36,10 @@ body {
 main {
   flex: 1;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   padding: 1rem;
-  /* overflow: auto; */
 }
 
 footer {
@@ -59,7 +62,7 @@ h2 {
 }
 
 input {
-  color: var(--foreground);
+  color: white
 }
 
 @keyframes spin {

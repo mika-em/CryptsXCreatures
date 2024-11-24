@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { generateStory } from '../utils/story';
-import Typewriter from '../components/typewriter';
+import PageWrapper from '../components/PageWrapper';
 
 export default function StoryPage() {
   const [prompt, setPrompt] = useState('');
@@ -29,7 +29,7 @@ export default function StoryPage() {
       setToastMessage('Story generated successfully!');
       setToastType('success');
     } catch (err) {
-      setToastMessage('There was an issue. Please try again later.');
+      setToastMessage('There was an issue generating the story.');
       setToastType('error');
     } finally {
       setLoading(false);
@@ -37,19 +37,16 @@ export default function StoryPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h1 className="text-6xl bg-clip-text glowing-text text-transparent bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 font-bold pb-5 mb-6">
-        <Typewriter text="start your journey" delay={100} />
-      </h1>
+    <PageWrapper title="Start Your Journey" centerContent={true}>
       <form
         onSubmit={handleSubmit}
-        className="card w-1/3 bg-base-100 p-4"
+        className="card w-full max-w-lg bg-base-200 p-6 shadow-md"
       >
         <div className="form-control mb-4">
           <textarea
             className="textarea text-base-content text-xl p-4"
             rows={3}
-            placeholder="..."
+            placeholder="Type your prompt here..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             required
@@ -57,7 +54,9 @@ export default function StoryPage() {
         </div>
         <button
           type="submit"
-          className={`btn text-base-content btn-primary w-full ${loading ? 'btn-disabled' : ''}`}
+          className={`btn text-base-content btn-primary w-full ${
+            loading ? 'btn-disabled' : ''
+          }`}
         >
           {loading ? (
             <span className="loading loading-lg loading-infinity"></span>
@@ -66,11 +65,13 @@ export default function StoryPage() {
           )}
         </button>
       </form>
+
       {generatedText && (
-        <div className="card mt-4 w-1/3 bg-base-100 p-4">
+        <div className="card mt-6 w-full max-w-lg bg-base-100 p-6">
           <p className="text-base-content text-xl">{generatedText}</p>
         </div>
       )}
+
       {toastMessage && (
         <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex justify-center">
           <div
@@ -84,6 +85,6 @@ export default function StoryPage() {
           </div>
         </div>
       )}
-    </div>
+    </PageWrapper>
   );
 }

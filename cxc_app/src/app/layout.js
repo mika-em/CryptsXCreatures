@@ -23,9 +23,9 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dracula">
-      <body className="bg-base-100 text-base-content flex flex-col min-h-screen">
+      <body className="bg-base-300 text-base-content flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-1 flex items-center justify-center">
+        <main className="flex-1 container mx-auto px-4 py-8">
           {children}
         </main>
         <Footer />

@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { register } from '../utils/auth';
-import Typewriter from '../components/typewriter';
 import { useState } from 'react';
+import PageWrapper from '../components/PageWrapper';
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -33,14 +33,10 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-base-content items-center pb-4">
-        {''}
-        <Typewriter text="register" delay={100} />
-      </h2>
+    <PageWrapper title="Register" centerContent={true}>
       <form
         onSubmit={handleSubmit}
-        className="card w-full max-w-sm bg-base-100 p-4"
+        className="card w-full max-w-sm rounded-lg p-7 m-5 bg-base-200"
       >
         {err && (
           <div className="alert alert-error mb-4">
@@ -101,10 +97,10 @@ export default function RegisterPage() {
             required
           />
         </div>
-        <button type="submit" className="btn btn-primary w-full">
+        <button type="submit" className="btn pt-2 btn-accent w-full">
           Register
         </button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }

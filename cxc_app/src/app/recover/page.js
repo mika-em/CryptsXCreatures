@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { recovery } from '../utils/auth';
 import { useRouter } from 'next/navigation';
+import PageWrapper from '../components/PageWrapper';
 
 export default function RecoverPage() {
   const [loading, setLoading] = useState(false);
@@ -68,14 +69,11 @@ export default function RecoverPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h2 className="text-4xl font-bold mb-6 text-base-content">
-        {step === 1 && 'Recover Password'}
-        {step === 2 && 'Recover Password'}
-        {step === 3 && 'Recover Password'}
-      </h2>
-
-      <form onSubmit={handleSubmit} className="card w-full max-w-md bg-base-100 p-6 shadow-md">
+    <PageWrapper title="Recover Password" centerContent={true}>
+      <form
+        onSubmit={handleSubmit}
+        className="card w-full max-w-sm rounded-lg p-7 m-5 bg-base-200"
+      >
         {err && (
           <div className="alert alert-error mb-4">
             <span>{err}</span>
@@ -158,6 +156,6 @@ export default function RecoverPage() {
           {loading ? <span className="loading loading-ring"></span> : 'Submit'}
         </button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }

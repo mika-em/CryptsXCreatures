@@ -2,6 +2,8 @@
 import { useEffect, useState } from 'react';
 import { fetchUsers } from '../utils/auth';
 import UserTable from '../components/UserTable';
+import PageWrapper from '../components/PageWrapper';
+
 export default function AdminPage() {
   const [users, setUsers] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -13,7 +15,7 @@ export default function AdminPage() {
         const data = await fetchUsers();
         setUsers(data);
       } catch (e) {
-        setError(e.message || "An error occured.");
+        setError(e.message || 'An error occured.');
       } finally {
         setLoading(false);
       }
@@ -24,25 +26,28 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-screen">
-        <h1 className="text-3xl">Loading...</h1>
-      </div>
+      <PageWrapper title="Admin Dashboard" centerContent={true}>
+        <div className="flex items-center justify-center min-h-screen">
+          <h1 className="text-3xl">Loading...</h1>
+        </div>
+      </PageWrapper>
     );
   }
 
   if (error) {
-    return <div className="alert alert-danger">{error}</div>;
+    return (
+      <PageWrapper title="Admin Dashboard" centerContent={true}>
+        <div className="alert alert-error text-center mt-4">{error}</div>
+      </PageWrapper>
+    );
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h1 className="-pt-8 pb-7 text-5xl
-       bg-clip-text glowing-text text-transparent
-        bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 font-bold mb-6">
-        Admin Dashboard
-      </h1>
-      <h1 className="text-2xl">Users</h1>
-      <UserTable users={users} />
-    </div>
+    <PageWrapper title="Admin Dashboard" centerContent={true}>
+      <div className="flex flex-col items-center">
+        <h1 className="text-2xl mb-4">Users</h1>
+        <UserTable users={users} />
+      </div>
+    </PageWrapper>
   );
 }
