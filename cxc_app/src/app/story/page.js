@@ -18,7 +18,7 @@ export default function StoryPage() {
 
     try {
       const story = await generateStory(prompt);
-      setGeneratedText(story);
+      setGeneratedText(story.text);
       setSuccess('Story generated successfully!');
     } catch (err) {
       setErr('There was an issue generating the story.');
