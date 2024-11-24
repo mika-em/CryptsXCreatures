@@ -7,6 +7,7 @@ class Utils {
       secure: process.env.NODE_ENV === 'production',
       maxAge: 3600000,
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
+      path: '/',
     };
     const cookieOptions = { ...defaultOptions, ...options };
     res.cookie(name, value, cookieOptions);
@@ -17,7 +18,8 @@ class Utils {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
       sameSite: process.env.NODE_ENV === 'production' ? 'None' : 'Lax',
-      maxAge: 0
+      maxAge: 0,
+      path: '/',
     };
     const cookieOptions = { ...defaultOptions, ...options };
     res.clearCookie(name, cookieOptions);
