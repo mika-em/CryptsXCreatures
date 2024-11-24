@@ -11,10 +11,11 @@ class Story {
       const query = `
         CREATE TABLE IF NOT EXISTS story (
           id INT AUTO_INCREMENT PRIMARY KEY,
-          userId INT NOT NULL,
+          user_id INT NOT NULL,
+          first_prompt TEXT NOT NULL,
           context TEXT NOT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-          FOREIGN KEY (userId) REFERENCES user(id)
+          FOREIGN KEY (user_id) REFERENCES user(id)
         )
       `;
       db.connection.query(query, (err, results) => {
@@ -30,10 +31,10 @@ class Story {
 
   static create(userId, context, prompt) {
     return new Promise((resolve, reject) => {
-      const updatedContext = prompt + "\n" + context;
+      const updatedContext = prompt + context;
       const hexEncodedContext = Utils.hexEncodeText(updatedContext);
-      const query = 'INSERT INTO story (userId, context) VALUES (?, ?)';
-      db.connection.query(query, [userId, hexEncodedContext], (err, results) => {
+      const query = 'INSERT INTO story (user_id, first_prompt, context) VALUES (?, ?, ?)';
+      db.connection.query(query, [userId, prompt, hexEncodedContext], (err, results) => {
         if (err) {
           return reject(err);
         }
@@ -51,7 +52,6 @@ class Story {
           return reject(err);
         }
         if (results.length > 0) {
-          console.log("getbyidresults", results);
           const { id, userId, context } = results[0];
           const story = new Story(userId);
           story.id = id;
@@ -64,9 +64,9 @@ class Story {
     });
   }
 
-  static getByUserId(userId) {
+  static getStoriesByUserId(userId) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT * FROM story WHERE userId = ?';
+      const query = 'SELECT id AS storyId, first_prompt, created_at FROM story WHERE user_id  = ?';
       db.connection.query(query, [userId], (err, results) => {
         if (err) {
           return reject(err);
@@ -89,8 +89,7 @@ class Story {
         }
         const currentContextHex = results[0].context;
         const currentContext = Utils.hexDecodeText(currentContextHex);
-        const updatedContext = currentContext + prompt + newContext;
-        console.log('Updated Context:', updatedContext);
+        const updatedContext = currentContext + "\n" + prompt + " " + newContext;
         const updatedContextHex = Utils.hexEncodeText(updatedContext);
         const updateQuery = 'UPDATE story SET context = ? WHERE id = ?';
         db.connection.query(updateQuery, [updatedContextHex, this.id], (err, results) => {
@@ -127,7 +126,6 @@ class Story {
       });
     });
   }
-
 
 }
 

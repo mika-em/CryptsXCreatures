@@ -182,7 +182,7 @@ class Users {
 
   getAllUsers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT email, role FROM user";
+      const query = "SELECT email, role, call_count FROM user";
       db.connection.query(query, (err, results) => {
         if (err) {
           return reject(err);

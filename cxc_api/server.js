@@ -171,6 +171,17 @@ router.post('/generate', verifyJWT, async (req, res) => {
   }
 });
 
+router.get('/stories', verifyJWT, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const stories = await Story.getStoriesByUserId(userId);
+    res.json(stories);
+  } catch (err) {
+    console.error('Error retrieving stories:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 
 
 app.use(`/${apiPath}`, router);
