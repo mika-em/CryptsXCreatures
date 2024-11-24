@@ -1,0 +1,7 @@
+DB_HOST=localhost
+DB_PORT=3306
+DB_NAME=cxc_mysql
+DB_USER=cxc_admin
+DB_PASS=cryptsncreatures1031
+NODE_ENV=development
+PORT=3000

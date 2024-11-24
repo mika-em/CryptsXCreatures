@@ -1,9 +1,10 @@
-import { API } from '../constants/api';
+import {API} from "../constants/api"
+
 export async function makeRequest(endpoint, method, data = null) {
   const options = {
     method,
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include',
+    credentials: 'include', // Ensure cookies are always sent
   };
 
   if (data && method !== 'GET' && method !== 'HEAD') {
