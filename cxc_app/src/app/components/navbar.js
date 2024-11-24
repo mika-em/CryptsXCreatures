@@ -1,27 +1,27 @@
 'use client';
 import Link from 'next/link';
+import { FaPenNib } from 'react-icons/fa'; 
 
 export default function Navbar() {
   return (
     <div className="navbar text-white shadow-md sticky top-0 z-50">
-      {/* Left Section - Brand */}
       <div className="flex-1">
-        <Link
+      <Link
           href="/"
-          className="btn btn-ghost normal-case text-2xl font-bold"
+          className="btn btn-ghost normal-case text-2xl font-semibold flex items-center gap-2"
           aria-label="Homepage"
         >
-          CXC
+          <FaPenNib className="text-accent" />
+          <span className="font-serif font-semibold">CXC</span>
         </Link>
       </div>
 
-      {/* Right Section - Menu */}
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
           <li>
             <Link
               href="/story"
-              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
+              className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
               aria-label="Generate"
             >
               Generate
@@ -30,7 +30,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/login"
-              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
+              className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
               aria-label="Login"
             >
               Login
@@ -39,7 +39,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/register"
-              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
+              className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
               aria-label="Register"
             >
               Register
@@ -48,7 +48,7 @@ export default function Navbar() {
           <li>
             <Link
               href="/admin"
-              className="px-4 text-md hover:text-yellow-300 transition-all font-medium"
+              className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
               aria-label="Admin"
             >
               Admin

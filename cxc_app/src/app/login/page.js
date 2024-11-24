@@ -26,10 +26,10 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-base-content items-center pb-4">
+      <h1 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-base-content items-center pb-4">
         {''}
         <Typewriter text="login" delay={100} />
-      </h2>
+      </h1>
       <form
         onSubmit={handleSubmit}
         className="card w-full max-w-sm bg-base-100 p-4"

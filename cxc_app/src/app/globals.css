@@ -15,19 +15,41 @@
   }
 }
 
+html,
 body {
+  height: 100%;
+  margin: 0;
+  overflow: auto;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
   color: var(--foreground);
   background: var(--background);
-  font-family: 'Roboto', sans-serif !important;
+  font-family: 'Roboto', sans-serif;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  /* overflow: auto; */
+}
+
+footer {
+  flex-shrink: 0;
+  padding: 1rem;
+  text-align: center;
+  background-color: var(--background);
+  color: var(--foreground);
 }
 
 h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-family: 'Quintessential', serif !important;
+h2 {
+  font-family: 'Quintessential', serif;
 }
 
 .glowing-text {
@@ -37,7 +59,7 @@ h6 {
 }
 
 input {
-  color: white;
+  color: var(--foreground);
 }
 
 @keyframes spin {

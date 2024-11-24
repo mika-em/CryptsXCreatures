@@ -19,12 +19,15 @@ export const metadata = {
   description: 'Welcome to Crypts x Creatures',
 };
 
+
 export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dracula">
-      <body className="bg-base-100 text-base-content">
+      <body className="bg-base-100 text-base-content flex flex-col min-h-screen">
         <Navbar />
-        <main className="flex-grow min-h-screen">{children}</main>
+        <main className="flex-1 flex items-center justify-center">
+          {children}
+        </main>
         <Footer />
       </body>
     </html>
