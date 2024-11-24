@@ -1,11 +1,11 @@
-
 import HomePage from "./components/HomePage.js";
 import LoginForm from "./components/loginForm.js";
 import RegistrationForm from "./components/registrationForm.js";
 import ForgotPasswordForm from "./components/forgotPasswordForm.js";
 import StoryPage from "./components/StoryPage.js";
 import NotFoundPage from "./components/NotFoundPage.js";
-
+import AdminDashboard
+ from "./components/AdminPage.js";
 function renderComponent(component) {
   const appDiv = document.getElementById("app");
   appDiv.innerHTML = "";
@@ -17,7 +17,6 @@ function navigateTo(route) {
   router();
 }
 
-
 async function router() {
   const path = window.location.pathname;
   const isAuthenticated = await checkLoginStatus();
@@ -26,7 +25,7 @@ async function router() {
     case "/":
       renderComponent(HomePage);
       break;
-    
+
     case "/login":
       renderComponent(LoginForm);
       break;
@@ -46,7 +45,9 @@ async function router() {
         navigateTo("/");
       }
       break;
-      
+    case "/admin":
+      renderComponent(AdminDashboard);
+      break;
     default:
       renderComponent(NotFoundPage);
       break;
