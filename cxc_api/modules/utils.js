@@ -30,6 +30,16 @@ class Utils {
     const salt = bcrypt.genSaltSync(10);
     return bcrypt.hashSync(string, salt);
   }
+
+  static hexEncodeText(text) {
+    const buffer = Buffer.from(text, 'utf-8');
+    return buffer.toString('hex');
+  }
+
+  static hexDecodeText(hex) {
+    const buffer = Buffer.from(hex, 'hex');
+    return buffer.toString('utf-8');
+  }
 }
 
 module.exports = Utils;

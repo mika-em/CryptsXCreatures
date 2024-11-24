@@ -102,10 +102,10 @@ class Users {
             const token = this.generateJWT(user);
             resolve({ email: user.email, token });
           } else {
-            reject(new Error('Invalid email or password'));
+            reject(new Error('Invalid email or password 1'));
           }
         } else {
-          reject(new Error('Invalid email or password'));
+          reject(new Error('Invalid email or password 2'));
         }
       });
     });
@@ -182,7 +182,7 @@ class Users {
 
   getAllUsers() {
     return new Promise((resolve, reject) => {
-      const query = "SELECT email, role FROM user";
+      const query = "SELECT email, role, call_count FROM user";
       db.connection.query(query, (err, results) => {
         if (err) {
           return reject(err);
@@ -192,33 +192,47 @@ class Users {
     });
   }
 
-  increaseCallCount(email) {
+  increaseCallCount(userId) {
     return new Promise((resolve, reject) => {
-      const query = 'UPDATE user SET call_count = call_count + 1 WHERE email = ?';
-      db.connection.query(query, [email], (err, results) => {
+      const query = 'UPDATE user SET call_count = call_count + 1 WHERE id = ?';
+      db.connection.query(query, [userId], (err, results) => {
         if (err) {
           return reject(err);
         }
         resolve(results);
       });
     });
+
   }
 
-  getCallCount(email) {
+  getCallCount(userId) {
     return new Promise((resolve, reject) => {
-      const query = 'SELECT call_count FROM user WHERE email = ?';
+      const query = 'SELECT call_count FROM user WHERE id = ?';
+      db.connection.query(query, [userId], (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+        resolve(results[0].call_count);
+      });
+    });
+  }
+
+  getUserIdByEmail(email) {
+    return new Promise((resolve, reject) => {
+      const query = 'SELECT id FROM user WHERE email = ?';
       db.connection.query(query, [email], (err, results) => {
         if (err) {
           return reject(err);
         }
         if (results.length > 0) {
-          resolve(results[0].call_count);
+          resolve(results[0].id);
         } else {
           reject(new Error('Email not found'));
         }
       });
     });
   }
+
 }
 
 const instance = new Users();
