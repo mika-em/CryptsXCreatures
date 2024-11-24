@@ -1,13 +1,11 @@
 const https = require('https');
 const { URL } = require('url');
-const { STORY_URL } = require('./constants');
+const { STORY_URL, SPEECH_TO_TEXT_URL } = require('./constants');
 const User = require('./users');
 const Story = require('./story');
 const Utils = require('./utils');
 
 class StoryGenerator {
-
-
   static async generateStory(prompt, userId, storyId = "") {
     let story;
     if (storyId) {
@@ -79,6 +77,20 @@ class StoryGenerator {
       request.write(data);
       request.end();
     });
+  }
+
+  static async generateStoryFromAudio(audio_file, userId, storyId = "") {
+    const formData = new FormData();
+    formData.append('audio_file', audio_file, 'file');
+    
+    const response = await fetch(SPEECH_TO_TEXT_URL, {
+        method: 'POST',
+        body: formData
+    });
+
+    const responseJson = await response.json();
+
+    return generateStory(responseJson.transcription, userId, storyId);
   }
 }
 
