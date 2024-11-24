@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateStoryFromAudio } from '../utils/story';
+import { generateStory, generateStoryFromAudio } from '../utils/story';
 import Typewriter from '../components/typewriter';
 
 let audioChunks = [];
@@ -81,16 +81,32 @@ export default function StoryPage() {
     const uploadRecording = async () => {
         setLoading(true);
         try {
-            const story = await generateStoryFromAudio(audioBlob);
+            const formData = new FormData();
+            formData.append('audio_file', audioBlob, 'file');
+
+            // const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
+            const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
+                method: 'POST',
+                headers: { 'Content-Type': 'multipart/form-data' },
+                body: formData
+            });
+
+            const responseJson = await response.json();
+            console.log(responseJson);
+
+            // const story = await generateStoryFromAudio(audioBlob);
+
+            // const story = await generateStory("Hello, i am testing");
             setGeneratedText(story);
             setToastMessage('Success!');
             setToastType('success');
         } catch (err) {
             setToastMessage('There was an issue generating the story.');
             setToastType('error');
-          } finally {
+            console.log(err);
+        } finally {
             setLoading(false);
-          }
+        }
     }
 
     return (

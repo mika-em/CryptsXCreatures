@@ -182,11 +182,12 @@ router.get('/stories', verifyJWT, async (req, res) => {
   }
 });
 
-router.post('/voicegenerate', verifyJWT, async (req, res) => {
-  const { audio_file, storyId } = req.body;
-  const userId = req.user.id;
+router.post('/voicegenerate', async (req, res) => {
+  const { storyId } = req.body;
+  // const userId = req.user.id;
+  const userId = 2; // TODO: CHANGE THIS TO req.user.id WHEN ITS WORKING
   try {
-    const story = await StoryGenerator.generateStoryFromAudio(audio_file, userId, storyId);
+    const story = await StoryGenerator.generateStoryFromAudio(req.body, userId, storyId);
     res.json(story);
   } catch (err) {
     console.error('Error retrieving stories:', err);

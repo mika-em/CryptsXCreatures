@@ -31,6 +31,7 @@ export async function makeRequest(endpoint, method, data = null) {
 export async function makeMultipartRequest(endpoint, method, data = null) {
   const options = {
     method,
+    headers: { 'Content-Type': 'multipart/form-data' },
     credentials: 'include',
   };
   if (data && method !== 'GET' && method !== 'HEAD') {

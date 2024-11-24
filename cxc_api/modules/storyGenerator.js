@@ -79,13 +79,11 @@ class StoryGenerator {
     });
   }
 
-  static async generateStoryFromAudio(audio_file, userId, storyId = "") {
-    const formData = new FormData();
-    formData.append('audio_file', audio_file, 'file');
-    
+  static async generateStoryFromAudio(requestBody, userId, storyId = "") {    
     const response = await fetch(SPEECH_TO_TEXT_URL, {
         method: 'POST',
-        body: formData
+        headers: { 'Content-Type': 'multipart/form-data' },
+        body: requestBody
     });
 
     const responseJson = await response.json();

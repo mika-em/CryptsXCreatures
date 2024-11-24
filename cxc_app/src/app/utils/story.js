@@ -13,9 +13,9 @@ export async function generateStory(prompt) {
   }
 }
 
-export async function generateStoryFromAudio(prompt) {
+export async function generateStoryFromAudio(audioBlob) {
   try {
-    const response = await makeMultipartRequest('voicegenerate', 'POST', { prompt });
+    const response = await makeMultipartRequest('voicegenerate', 'POST', { audioBlob });
     if (response && response.response_plain_text) {
       return response.response_plain_text;
     }
