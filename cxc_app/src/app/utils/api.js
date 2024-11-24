@@ -4,31 +4,26 @@ export async function makeRequest(endpoint, method, data = null) {
   const options = {
     method,
     headers: { 'Content-Type': 'application/json' },
-    credentials: 'include', // Ensure cookies are always sent
+    credentials: 'include',
   };
-
   if (data && method !== 'GET' && method !== 'HEAD') {
     options.body = JSON.stringify(data);
   }
-
   const res = await fetch(`${API}/${endpoint}`, options);
-
   if (!res.ok) {
-    let errorMessage = 'Request failed';
+    let error = 'request failed';
     const contentType = res.headers.get('content-type');
     if (contentType && contentType.includes('application/json')) {
       const errorData = await res.json();
-      errorMessage = errorData.message || JSON.stringify(errorData);
+      error = errorData.message || JSON.stringify(errorData);
     } else {
-      errorMessage = await res.text();
+      error = await res.text();
     }
-    throw new Error(errorMessage);
+    throw new Error(error);
   }
-
   const contentType = res.headers.get('content-type');
   if (contentType && contentType.includes('application/json')) {
     return res.json();
   }
-
   return res.text();
 }

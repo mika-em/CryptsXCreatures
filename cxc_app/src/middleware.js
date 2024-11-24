@@ -2,55 +2,50 @@ import { API } from './app/constants/api';
 import { NextResponse } from 'next/server';
 
 export async function middleware(req) {
-  // Log all cookies for debugging
   const token = req.cookies.get('token');
-  console.log('Middleware Cookies:', req.cookies.getAll());
-  console.log('Middleware Token:', token?.value);
-
-  // Allow public routes without authentication
   const publicRoutes = ['/login', '/register', '/'];
-  if (publicRoutes.some((route) => req.nextUrl.pathname.startsWith(route))) {
+  const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
+  if (isPublicRoute) {
+    console.log('public route. skipping authentication.');
     return NextResponse.next();
   }
 
-  // Redirect if no token is found
   if (!token) {
-    console.log('No token found. Redirecting to home.');
-    return NextResponse.next(); // Allow access but note missing token for debugging
+    console.warn('no token found. redirecting to /login.');
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 
   try {
-    // Send the token to the backend for verification
     const res = await fetch(`${API}/verifyjwt`, {
       method: 'GET',
-      credentials: 'include', // Ensure cookies are included
+      credentials: 'include',
       headers: {
         Authorization: `Bearer ${token.value}`,
       },
     });
 
-    console.log('Verify-Token Response:', await res.text());
-
     if (!res.ok) {
+      console.error('token verification failed. redirecting to /login.');
       throw new Error('Invalid token');
     }
 
     const decoded = await res.json();
-    console.log('Decoded token:', decoded);
+    console.log('decoded token:', decoded);
 
-    // Check if accessing admin routes requires admin privileges
     if (req.nextUrl.pathname.startsWith('/admin') && decoded.role !== 'admin') {
-      console.log('Access denied for non-admin user.');
+      console.warn(
+        'non-admin user attempting to access /admin. redirecting to /.'
+      );
       return NextResponse.redirect(new URL('/', req.url));
     }
 
     return NextResponse.next();
   } catch (err) {
-    console.error('Token verification failed:', err);
-    return NextResponse.next(); // Prevent redirection, but log the error
+    console.error('middleware:', err.message);
+    return NextResponse.redirect(new URL('/login', req.url));
   }
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/story/:path*', '/'],
+  matcher: ['/admin/:path*', '/story/:path*'],
 };

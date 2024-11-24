@@ -1,5 +1,4 @@
 import { makeRequest } from './api';
-
 export async function login({ email, password }) {
   return makeRequest('login', 'POST', { email, password });
 }
