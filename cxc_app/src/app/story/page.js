@@ -8,15 +8,8 @@ export default function StoryPage() {
   const [prompt, setPrompt] = useState('');
   const [generatedText, setGeneratedText] = useState('');
   const [loading, setLoading] = useState(false);
-  const [toastMessage, setToastMessage] = useState(null);
-  const [toastType, setToastType] = useState('');
-
-  useEffect(() => {
-    if (toastMessage) {
-      const timer = setTimeout(() => setToastMessage(null), 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [toastMessage]);
+  const [err, setErr] = useState(null);
+  const [success, setSuccess] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -26,21 +19,24 @@ export default function StoryPage() {
     try {
       const story = await generateStory(prompt);
       setGeneratedText(story);
-      setToastMessage('Story generated successfully!');
-      setToastType('success');
+      setSuccess('Story generated successfully!');
     } catch (err) {
-      setToastMessage('There was an issue generating the story.');
-      setToastType('error');
+      setErr('There was an issue generating the story.');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <PageWrapper title="Start Your Journey" centerContent={true}>
+    <PageWrapper
+      title="Start Your Journey"
+      centerContent={true}
+      err={err}
+      success={success}
+    >
       <form
         onSubmit={handleSubmit}
-        className="card w-full max-w-lg bg-base-200 p-6 shadow-md"
+        className="card w-full max-w-sm md:max-w-lg bg-base-200 p-6 shadow-md"
       >
         <div className="form-control mb-4">
           <textarea
@@ -50,13 +46,15 @@ export default function StoryPage() {
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             required
+            aria-label="Story prompt"
           />
         </div>
         <button
           type="submit"
-          className={`btn text-base-content btn-primary w-full ${
-            loading ? 'btn-disabled' : ''
+          className={`btn text-base-content btn-primary w-full flex items-center justify-center ${
+            loading ? 'opacity-75 cursor-not-allowed' : ''
           }`}
+          disabled={loading}
         >
           {loading ? (
             <span className="loading loading-lg loading-infinity"></span>
@@ -67,22 +65,8 @@ export default function StoryPage() {
       </form>
 
       {generatedText && (
-        <div className="card mt-6 w-full max-w-lg bg-base-100 p-6">
+        <div className="card mt-6 w-full max-w-sm md:max-w-lg bg-base-100 p-6">
           <p className="text-base-content text-xl">{generatedText}</p>
-        </div>
-      )}
-
-      {toastMessage && (
-        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 flex justify-center">
-          <div
-            className={`p-2 rounded-md text-center text-sm max-w-xs ${
-              toastType === 'success'
-                ? 'bg-gray-800 text-green-300'
-                : 'bg-gray-800 text-red-300'
-            }`}
-          >
-            <span>{toastMessage}</span>
-          </div>
         </div>
       )}
     </PageWrapper>

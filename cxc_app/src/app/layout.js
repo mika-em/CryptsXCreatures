@@ -1,24 +1,12 @@
-import localFont from 'next/font/local';
 import './globals.css';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
-
-const geistSans = localFont({
-  src: './fonts/GeistVF.woff',
-  variable: '--font-geist-sans',
-  weight: '100 900',
-});
-const geistMono = localFont({
-  src: './fonts/GeistMonoVF.woff',
-  variable: '--font-geist-mono',
-  weight: '100 900',
-});
+import { Toaster } from 'react-hot-toast';
 
 export const metadata = {
   title: 'Crypts x Creatures',
   description: 'Welcome to Crypts x Creatures',
 };
-
 
 export default function RootLayout({ children }) {
   return (
@@ -26,6 +14,32 @@ export default function RootLayout({ children }) {
       <body className="bg-base-300 text-base-content flex flex-col min-h-screen">
         <Navbar />
         <main className="flex-1 container mx-auto px-4 py-8">
+          <Toaster
+            position="bottom-center"
+            toastOptions={{
+              duration: 4000,
+              success: {
+                style: {
+                  background: '#2d2d2d',
+                  color: '#86efac',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                },
+                icon: '🎉',
+              },
+              error: {
+                style: {
+                  background: '#2d2d2d',
+                  color: '#f87171',
+                  padding: '12px 16px',
+                  borderRadius: '8px',
+                  textAlign: 'center',
+                },
+                icon: '🔔',
+              },
+            }}
+          />
           {children}
         </main>
         <Footer />

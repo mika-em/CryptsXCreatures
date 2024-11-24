@@ -7,7 +7,7 @@ import PageWrapper from '../components/PageWrapper';
 export default function AdminPage() {
   const [users, setUsers] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [err, setErr] = useState(null);
 
   useEffect(() => {
     const loadUsers = async () => {
@@ -15,7 +15,7 @@ export default function AdminPage() {
         const data = await fetchUsers();
         setUsers(data);
       } catch (e) {
-        setError(e.message || 'An error occured.');
+        setErr(e.message || 'An error occured.');
       } finally {
         setLoading(false);
       }
@@ -34,10 +34,10 @@ export default function AdminPage() {
     );
   }
 
-  if (error) {
+  if (err) {
     return (
       <PageWrapper title="Admin Dashboard" centerContent={true}>
-        <div className="alert alert-error text-center mt-4">{error}</div>
+        <div className="alert alert-err text-center mt-4">{err}</div>
       </PageWrapper>
     );
   }
