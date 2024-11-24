@@ -1,4 +1,4 @@
-import { makeRequest } from './api';
+import { makeRequest, makeMultipartRequest } from './api';
 
 export async function generateStory(prompt) {
   try {
@@ -15,7 +15,7 @@ export async function generateStory(prompt) {
 
 export async function generateStoryFromAudio(prompt) {
   try {
-    const response = await makeMultipartRequest('generate', 'POST', { prompt });
+    const response = await makeMultipartRequest('voicegenerate', 'POST', { prompt });
     if (response && response.response_plain_text) {
       return response.response_plain_text;
     }
