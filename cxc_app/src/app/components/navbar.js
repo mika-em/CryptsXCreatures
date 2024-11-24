@@ -4,7 +4,6 @@ import Link from 'next/link';
 export default function Navbar() {
   return (
     <div className="navbar text-white shadow-md sticky top-0 z-50">
-      {/* Left Section - Brand */}
       <div className="flex-1">
         <Link
           href="/"
@@ -15,7 +14,6 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* Right Section - Menu */}
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
           <li>
