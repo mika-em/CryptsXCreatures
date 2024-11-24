@@ -9,6 +9,7 @@ const users = require('./modules/users');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const StoryGenerator = require('./modules/storyGenerator');
+const Story = require('./modules/story');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -24,24 +25,21 @@ app.use(cors(corsOptions));
 
 const router = express.Router();
 
-// Middleware to verify JWT
+
 const verifyJWT = (req, res, next) => {
   const token = req.cookies.token;
   if (!token) {
     return res.status(401).send("Access denied. No token provided.");
   }
-  jwt.verify(
-    token,
-    process.env.JWT_SECRET || "your_jwt_secret",
-    (err, decoded) => {
-      if (err) {
-        return res.status(401).send("Invalid token.");
-      }
-      req.user = decoded;
-      next();
-    },
-  );
+  jwt.verify(token, process.env.JWT_SECRET || "your_jwt_secret", (err, decoded) => {
+    if (err) {
+      return res.status(401).send("Invalid token.");
+    }
+    req.user = decoded;
+    next();
+  });
 };
+
 
 const checkAdminRole = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
@@ -162,16 +160,17 @@ router.post("/resetpassword", verifyResetToken, async (req, res) => {
 });
 
 router.post('/generate', verifyJWT, async (req, res) => {
-  const { prompt } = req.body;
-  const email = req.user.email;
+  const { prompt, storyId } = req.body;
+  const userId = req.user.id;
   try {
-    const story = await StoryGenerator.generateStory(prompt, email);
+    const story = await StoryGenerator.generateStory(prompt, userId, storyId);
     res.json(story);
   } catch (err) {
     console.error('Error generating story:', err);
     res.status(500).send('Server error');
   }
 });
+
 
 
 app.use(`/${apiPath}`, router);
@@ -182,9 +181,13 @@ app.use(`/${apiPath}`, router);
     const dbExists = await db.checkDatabase(process.env.DB_NAME);
     if (dbExists) {
       console.log("Database exists");
-      const tableExists = await db.checkTable(process.env.DB_NAME, "user");
-      if (!tableExists) {
+      const userTableExists = await db.checkTable(process.env.DB_NAME, "user");
+      if (!userTableExists) {
         await users.createTable();
+      }
+      const storyTableExists = await db.checkTable(process.env.DB_NAME, "story");
+      if (!storyTableExists) {
+        await Story.createTable();
       }
       app.listen(port, () => {
         console.log(`Server running at http://localhost:${port}/${apiPath}`);
