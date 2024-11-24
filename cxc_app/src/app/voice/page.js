@@ -1,13 +1,12 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { generateStory } from '../utils/story';
+import { generateStoryFromAudio } from '../utils/story';
 import Typewriter from '../components/typewriter';
 
 let audioChunks = [];
 
 export default function StoryPage() {
-    const [prompt, setPrompt] = useState('');
     const [generatedText, setGeneratedText] = useState('');
     const [loading, setLoading] = useState(false);
     const [toastMessage, setToastMessage] = useState(null);
@@ -82,19 +81,8 @@ export default function StoryPage() {
     const uploadRecording = async () => {
         setLoading(true);
         try {
-            const apiUrl = "https://mumulumu.com/speech2text";
-            const formData = new FormData();
-            formData.append('audio_data', audioBlob, 'file');
-            
-            const response = await fetch(apiUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                body: formData
-            });
-            
-            setGeneratedText(response.json());      
+            const story = await generateStoryFromAudio(audioBlob);
+            setGeneratedText(story);
             setToastMessage('Success!');
             setToastType('success');
         } catch (err) {

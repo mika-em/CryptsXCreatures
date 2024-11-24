@@ -182,7 +182,17 @@ router.get('/stories', verifyJWT, async (req, res) => {
   }
 });
 
-
+router.post('/voicegenerate', verifyJWT, async (req, res) => {
+  const { audio_file, storyId } = req.body;
+  const userId = req.user.id;
+  try {
+    const story = await StoryGenerator.generateStoryFromAudio(audio_file, userId, storyId);
+    res.json(story);
+  } catch (err) {
+    console.error('Error retrieving stories:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 app.use(`/${apiPath}`, router);
 
