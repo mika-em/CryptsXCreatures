@@ -26,10 +26,10 @@ export default function StoryPage() {
     try {
       const story = await generateStory(prompt);
       setGeneratedText(story);
-      setToastMessage('Success!');
+      setToastMessage('Story generated successfully!');
       setToastType('success');
     } catch (err) {
-      setToastMessage('There was an issue generating the story.');
+      setToastMessage('There was an issue. Please try again later.');
       setToastType('error');
     } finally {
       setLoading(false);
@@ -43,13 +43,13 @@ export default function StoryPage() {
       </h1>
       <form
         onSubmit={handleSubmit}
-        className="card w-1/3 bg-base-100 p-4 shadow-md"
+        className="card w-1/3 bg-base-100 p-4"
       >
         <div className="form-control mb-4">
           <textarea
             className="textarea text-base-content text-xl p-4"
             rows={3}
-            placeholder="Type your prompt here..."
+            placeholder="..."
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             required
@@ -60,10 +60,10 @@ export default function StoryPage() {
           className={`btn text-base-content btn-primary w-full ${loading ? 'btn-disabled' : ''}`}
         >
           {loading ? (
-              <span className="loading loading-lg loading-infinity"></span>
+            <span className="loading loading-lg loading-infinity"></span>
           ) : (
             'Go!'
-          ) }
+          )}
         </button>
       </form>
       {generatedText && (

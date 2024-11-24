@@ -1,4 +1,4 @@
-import {API} from "../constants/api"
+import { API } from '../constants/api';
 
 export async function makeRequest(endpoint, method, data = null) {
   const options = {
