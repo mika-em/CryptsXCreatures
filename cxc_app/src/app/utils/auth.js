@@ -28,3 +28,7 @@ export const recovery = {
     return makeRequest('resetpassword', 'POST', { email, newPassword });
   },
 };
+
+export async function fetchUsers() {
+  return makeRequest('admin/users', 'GET');
+}

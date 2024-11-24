@@ -32,12 +32,12 @@ export async function middleware(req) {
     const decoded = await res.json();
     console.log('decoded token:', decoded);
 
-    if (req.nextUrl.pathname.startsWith('/admin') && decoded.role !== 'admin') {
-      console.warn(
-        'non-admin user attempting to access /admin. redirecting to /.'
-      );
-      return NextResponse.redirect(new URL('/', req.url));
-    }
+    // if (req.nextUrl.pathname.startsWith('/admin') && decoded.role !== 'admin') {
+    //   console.warn(
+    //     'non-admin user attempting to access /admin. redirecting to /.'
+    //   );
+    //   return NextResponse.redirect(new URL('/', req.url));
+    // }
 
     return NextResponse.next();
   } catch (err) {
@@ -47,5 +47,5 @@ export async function middleware(req) {
 }
 
 export const config = {
-  matcher: ['/admin/:path*', '/story/:path*'],
+  matcher: ['/story/:path*'],
 };
