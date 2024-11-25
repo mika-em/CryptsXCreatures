@@ -79,15 +79,20 @@ class StoryGenerator {
     });
   }
 
-  static async generateStoryFromAudio(requestBody, userId, storyId = "") {    
-    const response = await fetch(SPEECH_TO_TEXT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        body: requestBody
-    });
+  static async generateStoryFromAudio(buffer, userId, storyId = "") {    
+    const blob = new Blob([buffer], { type: 'audio/wav' });
 
+    const formData = new FormData();
+    formData.append('audio_file', blob, 'file.wav');
+
+    const response = await fetch(SPEECH_TO_TEXT_URL, {
+      method: 'POST',
+      body: formData
+    });
     const responseJson = await response.json();
     
+    console.log(responseJson.transcription);
+
     return StoryGenerator.generateStory(responseJson.transcription, userId, storyId);
   }
 }

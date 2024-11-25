@@ -84,20 +84,14 @@ export default function StoryPage() {
             const formData = new FormData();
             formData.append('audio_file', audioBlob, 'file');
 
-            // const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
-            const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
+            const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
                 method: 'POST',
-                headers: { 'Content-Type': 'multipart/form-data' },
                 body: formData
             });
 
-            const responseJson = await response.json();
-            console.log(responseJson);
+            const story = await response.json();
 
-            // const story = await generateStoryFromAudio(audioBlob);
-
-            // const story = await generateStory("Hello, i am testing");
-            setGeneratedText(story);
+            setGeneratedText(story.response_plain_text);
             setToastMessage('Success!');
             setToastType('success');
         } catch (err) {
