@@ -79,17 +79,47 @@ class StoryGenerator {
     });
   }
 
-  static async generateStoryFromAudio(requestBody, userId, storyId = "") {    
+  // static async generateStoryFromAudio(requestBody, userId, storyId = "") {    
+  //   const response = await fetch(SPEECH_TO_TEXT_URL, {
+  //       method: 'POST',
+  //       headers: { 'Content-Type': 'multipart/form-data' },
+  //       body: requestBody
+  //   });
+
+  //   const responseJson = await response.json();
+
+  //   return generateStory(responseJson.transcription, userId, storyId);
+  // }
+
+  static async generateStoryFromAudio(requestBody, userId, storyId = "") {
+    const formData = new FormData();
+    
+    // Append audio file to the FormData object
+    formData.append('audio_file', requestBody.audio_file);
+  
+    // Add other fields if needed
+    if (storyId) {
+      formData.append('storyId', storyId);
+    }
+  
+    // Send the request
     const response = await fetch(SPEECH_TO_TEXT_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'multipart/form-data' },
-        body: requestBody
+      method: 'POST',
+      body: formData, // FormData auto-generates the multipart content type
     });
-
+  
+    // Check for errors in the response
+    if (!response.ok) {
+      throw new Error(`Speech-to-text API error: ${response.status}`);
+    }
+  
+    // Parse and return the JSON response
     const responseJson = await response.json();
-
-    return generateStory(responseJson.transcription, userId, storyId);
-  }
+    console.log('Speech-to-text response:', responseJson);
+  
+    // Pass the transcription to generateStory
+    return StoryGenerator.generateStory(responseJson.transcription, userId, storyId);
+  }  
 }
 
 module.exports = StoryGenerator;
