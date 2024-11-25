@@ -78,36 +78,68 @@ export default function StoryPage() {
         }
     };
 
+    // const uploadRecording = async () => {
+    //     setLoading(true);
+    //     try {
+    //         const formData = new FormData();
+    //         formData.append('audio_file', audioBlob, 'file');
+
+    //         const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
+    //         // const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
+    //             method: 'POST',
+    //             headers: { 'Content-Type': 'multipart/form-data' },
+    //             body: formData
+    //         });
+
+    //         const responseJson = await response.json();
+    //         console.log(responseJson);
+
+    //         // const story = await generateStoryFromAudio(audioBlob);
+
+    //         // const story = await generateStory("Hello, i am testing");
+    //         setGeneratedText(story);
+    //         setToastMessage('Success!');
+    //         setToastType('success');
+    //     } catch (err) {
+    //         setToastMessage('There was an issue generating the story.');
+    //         setToastType('error');
+    //         console.log(err);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }
+
     const uploadRecording = async () => {
         setLoading(true);
         try {
-            const formData = new FormData();
-            formData.append('audio_file', audioBlob, 'file');
-
-            const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
-            // const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
-                method: 'POST',
-                headers: { 'Content-Type': 'multipart/form-data' },
-                body: formData
-            });
-
-            const responseJson = await response.json();
-            console.log(responseJson);
-
-            // const story = await generateStoryFromAudio(audioBlob);
-
-            // const story = await generateStory("Hello, i am testing");
-            setGeneratedText(story);
-            setToastMessage('Success!');
-            setToastType('success');
+          const formData = new FormData();
+          formData.append('audio_file', audioBlob, 'file'); // Append the audio blob
+      
+          // Send the POST request without manually setting Content-Type
+          const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
+            method: 'POST',
+            body: formData,
+          });
+      
+          // Check for response status
+          if (!response.ok) {
+            throw new Error(`Server responded with status ${response.status}`);
+          }
+      
+          const responseJson = await response.json();
+          console.log('Server response:', responseJson);
+      
+          setGeneratedText(responseJson.story); // Update with response data
+          setToastMessage('Success!');
+          setToastType('success');
         } catch (err) {
-            setToastMessage('There was an issue generating the story.');
-            setToastType('error');
-            console.log(err);
+          setToastMessage('There was an issue generating the story.');
+          setToastType('error');
+          console.error('Error uploading recording:', err);
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    }
+      };      
 
     return (
         <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
