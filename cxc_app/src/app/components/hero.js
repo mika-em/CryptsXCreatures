@@ -3,8 +3,8 @@ import Link from 'next/link';
 
 export default function HeroSection() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-cover bg-center gap-24">
-      <div className="mt-6 flex flex-col items-center gap-2">
+    <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-cover bg-center gap-14">
+      <div className="-mt-7 flex flex-col items-center gap-2">
         <h2 className="text-2xl md:text-3xl font-semibold text-center text-base-content leading-tight">
           Welcome to
         </h2>
