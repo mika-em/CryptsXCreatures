@@ -49,11 +49,7 @@ export default function AdminPage() {
   }, [authenticated, isAdmin, roleLoading]);
 
   if (authLoading || roleLoading || dataLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen">
-        <h1 className="text-3xl">Checking permissions and loading data...</h1>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (dataError) {

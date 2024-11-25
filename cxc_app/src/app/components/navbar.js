@@ -34,14 +34,10 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
       <div className="flex-1">
-        <Link
-          href="/"
-          className="btn btn-ghost normal-case text-2xl font-semibold flex items-center gap-2"
-          aria-label="Homepage"
-        >
+        <div className=" px-5 normal-case text-2xl font-semibold flex items-center gap-2">
           <FaPenNib className="text-accent" />
           <span className="font-typewriter font-semibold">CXC</span>
-        </Link>
+        </div>
       </div>
 
       <div className="flex-none">

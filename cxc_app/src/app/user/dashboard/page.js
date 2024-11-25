@@ -5,6 +5,7 @@ import { useRedirectBasedOnRole } from '../../hooks/useRedirect';
 import { getStories } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
 import Link from 'next/link';
+import Loading from '@/app/components/loading';
 
 export default function UserDashboard() {
   const { authenticated, isAdmin, roleChecked } = useRedirectBasedOnRole();
@@ -35,16 +36,12 @@ export default function UserDashboard() {
   }, [authenticated, isAdmin, roleChecked]);
 
   if (!roleChecked || loadingStories) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
-        <p className="text-xl font-medium">Loading your dashboard...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!authenticated || isAdmin) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
+      <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
         <p className="text-xl font-medium">
           Unauthorized access. Please log in as a user to view this dashboard.
         </p>
@@ -57,7 +54,7 @@ export default function UserDashboard() {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
+      <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
         <p className="text-xl font-medium text-error">{error}</p>
         <Link href="/" className="btn btn-primary mt-4">
           Go to Home
