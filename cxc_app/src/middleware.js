@@ -27,19 +27,19 @@ function roleBasedRedirect(req, role) {
 
   if (req.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
     console.warn(
-      'Non-admin user attempting to access /admin. Redirecting to /404.'
+      'Non-admin user attempting to access /admin. Redirecting to /error/404.'
     );
-    return NextResponse.redirect(new URL('/404', req.url));
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 
   if (req.nextUrl.pathname.startsWith('/user') && role !== 'user') {
-    console.warn('non-user attempting to access /user. Redirecting to /404.');
-    return NextResponse.redirect(new URL('/404', req.url));
+    console.warn('non-user attempting to access /user. Redirecting to /error/404.');
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 
   if (req.nextUrl.pathname.startsWith('/story') && role !== 'user') {
-    console.warn('Unauthorized access to /story. Redirecting to /404.');
-    return NextResponse.redirect(new URL('/404', req.url));
+    console.warn('Unauthorized access to /story. Redirecting to /error/404.');
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
   return null;
 }
@@ -55,7 +55,7 @@ export async function middleware(req) {
 
   if (!token) {
     console.warn('No token found. error page');
-    return NextResponse.redirect(new URL('/404', req.url));
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 
   try {
@@ -74,9 +74,9 @@ export async function middleware(req) {
   } catch (e) {
     console.error('Middleware error:', e.message);
     if (e.message === 'Server error') {
-      return NextResponse.redirect(new URL('/500', req.url));
+      return NextResponse.redirect(new URL('/error/500', req.url));
     }
-    return NextResponse.redirect(new URL('/404', req.url));
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 }
 

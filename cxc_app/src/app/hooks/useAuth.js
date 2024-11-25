@@ -23,10 +23,10 @@ export function useAuth() {
       if (!res.ok) {
         if (res.status === 500) {
           setError('Server error occurred. Please try again later.');
-          router.push('/500');
+          router.push('/error/500');
         } else {
           setError('Unauthorized access. Redirecting to 404.');
-          router.push('/404');
+          router.push('/error/404');
         }
         return;
       }
@@ -37,7 +37,7 @@ export function useAuth() {
       console.error('Auth error:', e.message);
       setUser(null);
       setError('An unexpected error occurred. Please try again later.');
-      router.push('/500');
+      router.push('/error/500');
     } finally {
       setLoading(false);
     }
