@@ -26,15 +26,21 @@ function roleBasedRedirect(req, role) {
   }
 
   if (req.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
-    console.warn('Non-admin user attempting to access /admin. Redirecting to /.');
+    console.warn(
+      'Non-admin user attempting to access /admin. Redirecting to /.'
+    );
     return NextResponse.redirect(new URL('/', req.url));
   }
 
   if (req.nextUrl.pathname.startsWith('/user') && role !== 'user') {
-    console.warn('Non-user attempting to access /user. Redirecting to /.');
+    console.warn('non-user attempting to access /user. Redirecting to /.');
     return NextResponse.redirect(new URL('/', req.url));
   }
 
+  if (req.nextUrl.pathname.startsWith('/story') && role !== 'user') {
+    console.warn('Unauthorized access to /story. Redirecting to /login.');
+    return NextResponse.redirect(new URL('/login', req.url));
+  }
   return null;
 }
 
