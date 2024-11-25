@@ -14,6 +14,15 @@ const Story = require('./modules/story');
 app.use(express.json());
 app.use(cookieParser());
 
+// const corsOptions = {
+//   origin: ['http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'https://www.cryptsxcreatures.com'],
+//   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+//   credentials: true,
+//   optionsSuccessStatus: 204,
+// };
+
+// app.use(cors(corsOptions));
+
 const corsOptions = {
   origin: ['http://127.0.0.1:5500', 'http://127.0.0.1:5501', 'https://www.cryptsxcreatures.com'],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -22,9 +31,17 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Preflight handler
+
+// Global error handler to ensure CORS headers are included in error responses
+app.use((err, req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*'); // Replace '*' with specific domains in production
+  res.header('Access-Control-Allow-Methods', 'GET, POST, OPTIONS, PUT, DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.status(err.status || 500).send({ error: err.message || 'Internal Server Error' });
+});
 
 const router = express.Router();
-
 
 const verifyJWT = (req, res, next) => {
   const token = req.cookies.token;
