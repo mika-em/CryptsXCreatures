@@ -87,7 +87,7 @@ class StoryGenerator {
     });
 
     const responseJson = await response.json();
-
+    
     return generateStory(responseJson.transcription, userId, storyId);
   }
 }
