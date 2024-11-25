@@ -4,6 +4,8 @@ const { STORY_URL, SPEECH_TO_TEXT_URL } = require('./constants');
 const User = require('./users');
 const Story = require('./story');
 const Utils = require('./utils');
+const FormData = require('form-data');
+const { Blob } = require('blob-polyfill');
 
 class StoryGenerator {
   static async generateStory(prompt, userId, storyId = "") {
@@ -79,21 +81,75 @@ class StoryGenerator {
     });
   }
 
-  static async generateStoryFromAudio(buffer, userId, storyId = "") {    
-    const blob = new Blob([buffer], { type: 'audio/wav' });
+  static async generateStoryFromAudio(file, userId, storyId = "") {
+    const fileBuffer = file.buffer;
+    const audioBlob = new Blob([fileBuffer], { type: file.mimetype });
 
     const formData = new FormData();
-    formData.append('audio_file', blob, 'file.wav');
-
-    const response = await fetch(SPEECH_TO_TEXT_URL, {
-      method: 'POST',
-      body: formData
+    console.log('File:', file);
+    formData.append('audio_file', fileBuffer, {
+      filename: file.originalname,
+      contentType: file.mimetype,
     });
-    const responseJson = await response.json();
-    
-    console.log(responseJson.transcription);
 
-    return StoryGenerator.generateStory(responseJson.transcription, userId, storyId);
+    console.log("form type", formData);
+    console.log("form type", file.mimetype);
+
+    let userTranscription = '';
+
+    return new Promise((resolve, reject) => {
+      try {
+        const url = new URL(SPEECH_TO_TEXT_URL);
+
+        const options = {
+          hostname: url.hostname,
+          path: url.pathname,
+          method: 'POST',
+          family: 4,
+          timeout: 30000,
+          headers: formData.getHeaders(),
+        };
+
+        const request = https.request(options, (response) => {
+          let data = '';
+
+          response.on('data', (chunk) => {
+            data += chunk;
+          });
+
+          response.on('end', async () => {
+            if (response.statusCode === 200) {
+              try {
+                const responseData = JSON.parse(data);
+                userTranscription = responseData.transcription;
+                console.log('Transcription:', userTranscription);
+                resolve(StoryGenerator.generateStory(userTranscription, userId, storyId));
+              } catch (err) {
+                console.error('Error:', err);
+                reject(new Error('Error processing transcript'));
+              }
+            } else {
+              console.error('Error generating transcript:', data);
+              reject(new Error('Error generating transcript'));
+            }
+          });
+        });
+
+        request.on('error', (err) => {
+          console.error('Error generating transcript:', err);
+          reject(new Error('Server error'));
+        });
+
+        // request.write(file);
+        // request.end();
+        formData.pipe(request);
+
+        request.end();
+      } catch (err) {
+        console.error('Error generating transcript:', err);
+        reject(new Error('Error generating transcript'));
+      }
+    });
   }
 }
 

@@ -82,9 +82,10 @@ export default function StoryPage() {
         setLoading(true);
         try {
             const formData = new FormData();
-            formData.append('audio_file', audioBlob, 'file');
+            formData.append('audio_file', audioBlob, 'file.wav');
 
-            const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
+            // const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
+            const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
                 method: 'POST',
                 body: formData
             });
