@@ -1,7 +1,7 @@
-import { API } from './constants/api';
-
+"use client";
+import { API } from '../constants/api'
 import { createContext, useContext, useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const AuthContext = createContext();
 
@@ -13,7 +13,7 @@ export function AuthProvider({ children }) {
   useEffect(() => {
     async function fetchUser() {
       try {
-        const res = await fetch(`${API}/verifyJWT`, {
+        const res = await fetch(`${API}/verifyjwt`, {
           method: 'GET',
           credentials: 'include',
         });
@@ -45,3 +45,5 @@ export function AuthProvider({ children }) {
 export function useAuth() {
   return useContext(AuthContext);
 }
+
+
