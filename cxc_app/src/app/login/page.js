@@ -5,7 +5,7 @@ import PageWrapper from '../components/PageWrapper';
 import { login } from '../utils/auth';
 import { useRouter } from 'next/navigation';
 import Loading from '../components/loading';
-import { useAuthContext } from '../context/authcontext';
+import { useAuthContext } from '../context/AuthContext';
 
 export default function LoginPage() {
   const [err, setErr] = useState(null);

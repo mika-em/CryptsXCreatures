@@ -49,7 +49,7 @@
 
 'use client';
 
-import { useAuthContext } from '../context/authcontext';
+import { useAuthContext } from '../context/AuthContext';
 
 export function useRole() {
   const { isAdmin, loading, error } = useAuthContext();
