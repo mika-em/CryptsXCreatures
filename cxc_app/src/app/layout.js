@@ -2,6 +2,7 @@ import './globals.css';
 import Navbar from './components/navbar';
 import Footer from './components/footer';
 import { Toaster } from 'react-hot-toast';
+import { AuthProvider } from './context/authcontext';
 
 export const metadata = {
   title: 'Crypts x Creatures',
@@ -40,7 +41,7 @@ export default function RootLayout({ children }) {
               },
             }}
           />
-          {children}
+          <AuthProvider>{children}</AuthProvider>
         </main>
         <Footer />
       </body>
