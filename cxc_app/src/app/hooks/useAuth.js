@@ -17,7 +17,7 @@ export function useAuth() {
         });
 
         if (res.ok) {
-          const text = await res.text();
+          const text = await res.text(); // Expect "Welcome!"
           setAuthenticated(text === 'Welcome!');
         } else {
           setAuthenticated(false);

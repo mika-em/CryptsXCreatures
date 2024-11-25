@@ -34,7 +34,7 @@ export default function Navbar() {
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
       <div className="flex-1">
-        <div className=" px-5 normal-case text-2xl font-semibold flex items-center gap-2">
+        <div className="px-5 normal-case text-2xl font-semibold flex items-center gap-2">
           <FaPenNib className="text-accent" />
           <span className="font-typewriter font-semibold">CXC</span>
         </div>
@@ -65,15 +65,26 @@ export default function Navbar() {
                 </li>
               )}
               {isAdmin && (
-                <li>
-                  <Link
-                    href="/admin/dashboard"
-                    className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
-                    aria-label="Admin"
-                  >
-                    Admin Dashboard
-                  </Link>
-                </li>
+                <>
+                  <li>
+                    <Link
+                      href="/admin/dashboard"
+                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                      aria-label="Admin Dashboard"
+                    >
+                      Dashboard
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/admin/story"
+                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                      aria-label="Admin Stories"
+                    >
+                      Stories
+                    </Link>
+                  </li>
+                </>
               )}
               <li>
                 <button

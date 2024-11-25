@@ -9,6 +9,7 @@ export function useRole(authenticated) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Only proceed if the user is authenticated
     if (!authenticated) {
       setLoading(false);
       return;
@@ -18,18 +19,22 @@ export function useRole(authenticated) {
       try {
         const res = await fetch(`${API}/admin/users`, {
           method: 'GET',
-          credentials: 'include',
+          credentials: 'include', // Send cookies automatically
         });
 
         if (res.ok) {
-          setIsAdmin(true);
+          const data = await res.json();
+
+          // Check if the response indicates the user is an admin
+          const currentUser = data.find((user) => user.role === 'admin');
+          setIsAdmin(!!currentUser); // Set admin status based on the response
         } else if (res.status === 403) {
-          setIsAdmin(false);
+          setIsAdmin(false); // User is not an admin
         } else {
-          throw new Error('Unexpected response while checking role.');
+          throw new Error('Unexpected response while determining role.');
         }
       } catch (err) {
-        console.error('Role determination error:', err.message);
+        console.error('Error determining role:', err.message);
         setError('Failed to determine role.');
       } finally {
         setLoading(false);

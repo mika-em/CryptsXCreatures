@@ -6,6 +6,7 @@ import { useRole } from '../hooks/useRole';
 import { generateStory } from '../utils/story';
 import { useRouter } from 'next/navigation';
 import PageWrapper from '../components/PageWrapper';
+import Loading from '../components/loading';
 
 export default function StoryPage() {
   const { authenticated, loading: authLoading } = useAuth();
@@ -17,37 +18,20 @@ export default function StoryPage() {
   const [success, setSuccess] = useState(null);
   const router = useRouter();
 
-  useEffect(() => {
-    if (authLoading || roleLoading) return;
 
-    if (!authenticated) {
+  useEffect(() => {
+    if (!authLoading && !roleLoading && !authenticated) {
       console.log('Redirecting to login...');
       router.push('/login');
-    } else if (isAdmin) {
-      console.log('Admin detected. Redirecting to /admin/dashboard...');
-      router.push('/admin/dashboard');
     }
-  }, [authenticated, isAdmin, authLoading, roleLoading, router]);
+  }, [authenticated, authLoading, roleLoading, router]);
 
   if (authLoading || roleLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
-        <p className="text-xl font-medium">Loading, please wait...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (!authenticated) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
-        <p className="text-xl font-medium">
-          Please log in to access this page.
-        </p>
-        <a href="/login" className="btn btn-primary mt-4">
-          Go to Login
-        </a>
-      </div>
-    );
+    return null;
   }
 
   async function handleSubmit(e) {
