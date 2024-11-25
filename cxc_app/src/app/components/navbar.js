@@ -27,7 +27,7 @@ export default function Navbar() {
           aria-label="Homepage"
         >
           <FaPenNib className="text-accent" />
-          <span className="font-serif font-semibold">CXC</span>
+          <span className="font-typewriter font-semibold">CXC</span>
         </Link>
       </div>
 

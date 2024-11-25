@@ -17,14 +17,14 @@ export default function HeroSection() {
         </h1>
       </div>
       <div className="flex flex-col items-center gap-8">
-        <p className="text-center text-md md:text-lg font-medium max-w-xl text-base-content -mt-5 leading-relaxed">
+        <p className="text-center text-md md:text-md font-normal max-w-xl text-base-content -mt-7 leading-relaxed">
           Embark on a journey of creativity, powered by AI. <br />
           Generate captivating stories, thrilling adventures, or your next great
           masterpiece.
         </p>
         <Link
           href="/story"
-          className="btn btn-accent btn-md text-md md:text-lg px-8 py-4 fle font-bold hover:scale-105 transition-all"
+          className="btn btn-accent btn-sm text-sm md:text-md font-bold hover:scale-105 transition-all"
           style={{ lineHeight: '1', textAlign: 'center' }}
         >
           START WRITING
