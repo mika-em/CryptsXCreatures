@@ -1,7 +1,11 @@
+'use client';
+import { useAuthContext } from '../context/authcontext';
 import Typewriter from './typewriter';
 import Link from 'next/link';
 
 export default function HeroSection() {
+  const authenticated = useAuthContext();
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-8 bg-cover bg-center gap-14">
       <div className="-mt-7 flex flex-col items-center gap-2">
@@ -23,7 +27,7 @@ export default function HeroSection() {
           masterpiece.
         </p>
         <Link
-          href="/login"
+           href={authenticated ? '/story' : '/login'}
           className="btn btn-accent btn-sm text-sm md:text-md font-bold hover:scale-105 transition-all"
           style={{ lineHeight: '1', textAlign: 'center' }}
         >

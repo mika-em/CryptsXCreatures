@@ -1,10 +1,10 @@
 'use client';
 
-import { useAuth } from './hooks/useAuth';
+import { useAuthContext } from './context/authcontext';
 import Loading from './components/loading';
 
 export default function AppContent({ children }) {
-  const { loading } = useAuth();
+  const { loading } = useAuthContext();
 
   if (loading) {
     return <Loading />;

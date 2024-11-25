@@ -1,14 +1,23 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import PageWrapper from '../components/PageWrapper';
-import { useRedirectBasedOnRole } from '../hooks/useRedirect';
 import { login } from '../utils/auth';
+import { useRouter } from 'next/navigation';
+import Loading from '../components/loading';
+import { useAuthContext } from '../context/authcontext';
 
 export default function LoginPage() {
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
-  const { roleChecked } = useRedirectBasedOnRole();
+  const router = useRouter();
+  const { authenticated, loading: authLoading, updateAuthStatus } = useAuthContext();
+
+  useEffect(() => {
+    if (!authLoading && authenticated) {
+      router.push('/');
+    }
+  }, [authenticated, authLoading, router]);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -23,7 +32,8 @@ export default function LoginPage() {
     try {
       console.log(`Attempting login with email: ${email}`);
       await login({ email, password });
-      console.log('Login successful.');
+      await updateAuthStatus(true);
+      router.push('/');
     } catch (err) {
       console.error('Login failed:', err.message);
       setErr(err.message || 'Invalid email or password');
@@ -32,14 +42,9 @@ export default function LoginPage() {
     }
   }
 
-  if (!roleChecked) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
-        <p className="text-xl font-medium">Loading...</p>
-      </div>
-    );
+  if (authLoading || loading) {
+    return <Loading />;
   }
-
   return (
     <PageWrapper title="Login" centerContent={true} err={err}>
       <form

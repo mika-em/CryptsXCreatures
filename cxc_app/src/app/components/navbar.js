@@ -1,35 +1,39 @@
 'use client';
+
 import Link from 'next/link';
 import { FaPenNib } from 'react-icons/fa';
 import { logout } from '../utils/auth';
-import { useRedirectBasedOnRole } from '../hooks/useRedirect';
+import { useAuthContext } from '../context/authcontext'; // Ensure you use the context for auth
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
 export default function Navbar() {
+  const { authenticated, isAdmin, loading, updateAuthStatus } =
+    useAuthContext(); // Extract context
   const router = useRouter();
-  const { roleChecked, isAdmin, authenticated } = useRedirectBasedOnRole();
-  const [userLoggedIn, setUserLoggedIn] = useState(false);
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (roleChecked) {
-      setUserLoggedIn(authenticated);
+    if (!loading) {
+      setIsReady(true); 
     }
-  }, [roleChecked, authenticated]);
+  }, [loading]);
 
   const handleLogout = async () => {
     try {
       await logout();
+      updateAuthStatus(false, false); 
       router.push('/');
-      setUserLoggedIn(false);
     } catch (error) {
       console.error('Logout failed:', error.message);
     }
   };
 
-  if (!roleChecked) {
-    return null;
+  if (loading || !isReady) {
+    return null; 
   }
+  console.log('Authenticated:', authenticated);
+  console.log('Admin:', isAdmin);
 
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
@@ -39,32 +43,11 @@ export default function Navbar() {
           <span className="font-typewriter font-semibold">CXC</span>
         </div>
       </div>
-
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
-          {userLoggedIn ? (
+          {authenticated ? (
             <>
-              <li>
-                <Link
-                  href="/story"
-                  className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
-                  aria-label="Generate"
-                >
-                  Generate
-                </Link>
-              </li>
-              {!isAdmin && (
-                <li>
-                  <Link
-                    href="/user/dashboard"
-                    className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
-                    aria-label="Dashboard"
-                  >
-                    Dashboard
-                  </Link>
-                </li>
-              )}
-              {isAdmin && (
+              {isAdmin ? (
                 <>
                   <li>
                     <Link
@@ -82,6 +65,27 @@ export default function Navbar() {
                       aria-label="Admin Stories"
                     >
                       Stories
+                    </Link>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <Link
+                      href="/story"
+                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                      aria-label="Generate Story"
+                    >
+                      Generate
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
+                      href="/user/dashboard"
+                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                      aria-label="User Dashboard"
+                    >
+                      Dashboard
                     </Link>
                   </li>
                 </>
