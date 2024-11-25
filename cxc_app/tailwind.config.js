@@ -1,6 +1,7 @@
 /** @type {import('tailwindcss').Config} */
+import daisyui from 'daisyui';
 
-module.exports = {
+export default {
   content: [
     './src/pages/**/*.{js,ts,jsx,tsx,mdx}',
     './src/components/**/*.{js,ts,jsx,tsx,mdx}',
@@ -12,16 +13,14 @@ module.exports = {
         background: 'var(--background)',
         foreground: 'var(--foreground)',
       },
-      extend: {
-        fontFamily: {
-          sans: ['Open Sans'],
-          title: ['Silkscreen', 'cursive'], 
-          body: ['Open Sans', 'sans-serif'],
-        },
+      fontFamily: {
+        sans: ['Open Sans'],
+        title: ['Silkscreen', 'cursive'],
+        body: ['Open Sans', 'sans-serif'],
       },
     },
   },
-  plugins: [require('daisyui')],
+  plugins: [daisyui],
   daisyui: {
     themes: ['dark', 'dracula'],
     base: true,

@@ -13,8 +13,18 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-theme="dracula">
       <body className="bg-base-300 text-base-content flex flex-col min-h-screen">
-      <link href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap" rel="stylesheet"></link>
-      <link href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap" rel="stylesheet"></link>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Courier+Prime&display=swap"
+          rel="stylesheet"
+        ></link>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Special+Elite&display=swap"
+          rel="stylesheet"
+        ></link>
+        <link
+          href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Silkscreen&display=swap"
+          rel="stylesheet"
+        />
         <Toaster
           position="bottom-center"
           toastOptions={{

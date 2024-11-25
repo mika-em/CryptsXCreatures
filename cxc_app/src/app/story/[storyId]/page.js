@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useParams } from 'next/navigation'; 
-import { getStories, generateStory } from '../../../services/api';
-import PageWrapper from '../../../components/pageWrapper';
+import { getStories, generateStory } from '../../utils/story';
+import PageWrapper from '../../components/PageWrapper';
 
 export default function ContinueStory() {
   const { storyId } = useParams(); 
