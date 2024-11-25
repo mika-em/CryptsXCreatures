@@ -1,44 +1,50 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { API } from '../constants/api';
+import { toast } from 'react-hot-toast';
 
 export function useAuth() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const [error, setError] = useState(null);
 
-  useEffect(() => {
-    async function fetchUser() {
-      try {
-        const res = await fetch(`${API}/verifyjwt`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+  const fetchUser = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(`${API}/verifyjwt`, {
+        method: 'GET',
+        credentials: 'include',
+      });
 
-        if (!res.ok) {
-          if (res.status === 500) {
-            console.warn('Token missing or invalid. Redirecting to login.');
-          } else {
-            console.error('Unexpected server response:', res.status);
-          }
-          throw new Error('Authentication failed.');
+      if (!res.ok) {
+        if (res.status === 500) {
+          setError('Server error occurred. Please try again later.');
+          router.push('/500');
+        } else {
+          setError('Unauthorized access. Redirecting to 404.');
+          router.push('/404');
         }
-
-        const userData = await res.json();
-        setUser(userData);
-      } catch (error) {
-        console.error('Auth error:', error.message);
-        setUser(null);
-        router.push('/'); 
-      } finally {
-        setLoading(false);
+        return;
       }
-    }
 
+      const userData = await res.json();
+      setUser(userData);
+    } catch (e) {
+      console.error('Auth error:', e.message);
+      setUser(null);
+      setError('An unexpected error occurred. Please try again later.');
+      router.push('/500');
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchUser();
   }, [router]);
 
-  return { user, loading };
+  return { user, loading, error, retry: fetchUser };
 }
