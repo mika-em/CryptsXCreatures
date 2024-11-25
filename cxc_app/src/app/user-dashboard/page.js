@@ -28,18 +28,17 @@ export default function UserDashboard() {
 
   if (loading) {
     return (
-      <PageWrapper>
-        <p>Loading your stories...</p>
+      <PageWrapper title="Loading stories..." centerContent>
       </PageWrapper>
     );
   }
 
   return (
-    <PageWrapper>
-      <div className="container mx-auto py-8">
-        <h1 className="text-2xl font-bold mb-4">Welcome, {user?.email}!</h1>
-        <h2 className="text-xl mb-4">Your Stories</h2>
-
+    <PageWrapper
+    title="Your Stories"
+    error={error}
+    success={stories.length > 0 ? 'Stories loaded.' : null}
+    centerContent>
         <div className="overflow-x-auto overflow-y-auto max-h-96 pt-5 border-base-content rounded-md shadow-xl p-4">
           <table className="table table-zebra w-full">
             <thead>
@@ -85,7 +84,6 @@ export default function UserDashboard() {
             Generate New Story
           </Link>
         </div>
-      </div>
     </PageWrapper>
   );
 }
