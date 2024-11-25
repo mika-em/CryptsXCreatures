@@ -3,7 +3,7 @@ import Navbar from './components/navbar';
 import Footer from './components/footer';
 import { Toaster } from 'react-hot-toast';
 import AppContent from './AppContent';
-import { AuthProvider } from './context/authcontext';
+import { AuthProvider } from '../app/context/authcontext';
 
 export const metadata = {
   title: 'Crypts x Creatures',
