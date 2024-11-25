@@ -1,5 +1,5 @@
 'use client';
-import { useAuthContext } from '../context/authcontext';
+import { useAuthContext } from '../context/AuthContext';
 import Typewriter from './typewriter';
 import Link from 'next/link';
 

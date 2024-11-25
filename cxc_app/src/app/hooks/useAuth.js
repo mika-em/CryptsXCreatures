@@ -38,7 +38,7 @@
 
 'use client';
 
-import { useAuthContext } from '../context/authcontext';
+import { useAuthContext } from '../context/AuthContext';
 
 export function useAuth() {
   const { authenticated, loading, error } = useAuthContext();

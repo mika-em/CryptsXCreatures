@@ -1,6 +1,6 @@
 'use client';
 
-import { useAuthContext } from '../app/context/authcontext';
+import { useAuthContext } from './context/AuthContext';
 import Loading from './components/loading';
 
 export default function AppContent({ children }) {

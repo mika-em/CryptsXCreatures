@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { FaPenNib } from 'react-icons/fa';
 import { logout } from '../utils/auth';
-import { useAuthContext } from '../context/authcontext'; // Ensure you use the context for auth
+import { useAuthContext } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 
