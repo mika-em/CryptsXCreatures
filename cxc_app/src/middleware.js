@@ -1,51 +1,85 @@
 import { API } from './app/constants/api';
 import { NextResponse } from 'next/server';
 
+async function verifyToken(token) {
+  const res = await fetch(`${API}/verifyjwt`, {
+    method: 'GET',
+    credentials: 'include',
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  if (!res.ok) {
+    throw new Error('Token verification failed');
+  }
+
+  return res.json();
+}
+
+function roleBasedRedirect(req, role) {
+  const url = req.nextUrl.clone();
+
+  if (req.nextUrl.pathname === '/login') {
+    url.pathname = role === 'admin' ? '/admin-dashboard' : '/user-dashboard';
+    return NextResponse.redirect(url);
+  }
+
+  if (req.nextUrl.pathname.startsWith('/admin') && role !== 'admin') {
+    console.warn(
+      'Non-admin user attempting to access /admin. Redirecting to /error/404.'
+    );
+    return NextResponse.redirect(new URL('/error/404', req.url));
+  }
+
+  if (req.nextUrl.pathname.startsWith('/user') && role !== 'user') {
+    console.warn('non-user attempting to access /user. Redirecting to /error/404.');
+    return NextResponse.redirect(new URL('/error/404', req.url));
+  }
+
+  if (req.nextUrl.pathname.startsWith('/story') && role !== 'user') {
+    console.warn('Unauthorized access to /story. Redirecting to /error/404.');
+    return NextResponse.redirect(new URL('/error/404', req.url));
+  }
+  return null;
+}
+
 export async function middleware(req) {
   const token = req.cookies.get('token');
   const publicRoutes = ['/login', '/register', '/'];
-  const isPublicRoute = publicRoutes.includes(req.nextUrl.pathname);
-  if (isPublicRoute) {
-    console.log('public route. skipping authentication.');
+
+  if (publicRoutes.includes(req.nextUrl.pathname)) {
+    console.log('Public route. Skipping authentication.');
     return NextResponse.next();
   }
 
   if (!token) {
-    console.warn('no token found. redirecting to /login.');
-    return NextResponse.redirect(new URL('/login', req.url));
+    console.warn('No token found. error page');
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 
   try {
-    const res = await fetch(`${API}/verifyjwt`, {
-      method: 'GET',
-      credentials: 'include',
-      headers: {
-        Authorization: `Bearer ${token.value}`,
-      },
-    });
+    const decoded = await verifyToken(token.value);
+    const role = decoded.role;
 
-    if (!res.ok) {
-      console.error('token verification failed. redirecting to /login.');
-      throw new Error('Invalid token');
+    const redirectResponse = roleBasedRedirect(req, role);
+    if (redirectResponse) return redirectResponse;
+
+    if (req.nextUrl.pathname.startsWith('/story')) {
+      console.log('Token verified. Granting access to /story.');
+      return NextResponse.next();
     }
 
-    const decoded = await res.json();
-    console.log('decoded token:', decoded);
-
-    // if (req.nextUrl.pathname.startsWith('/admin') && decoded.role !== 'admin') {
-    //   console.warn(
-    //     'non-admin user attempting to access /admin. redirecting to /.'
-    //   );
-    //   return NextResponse.redirect(new URL('/', req.url));
-    // }
-
     return NextResponse.next();
-  } catch (err) {
-    console.error('middleware:', err.message);
-    return NextResponse.redirect(new URL('/login', req.url));
+  } catch (e) {
+    console.error('Middleware error:', e.message);
+    if (e.message === 'Server error') {
+      return NextResponse.redirect(new URL('/error/500', req.url));
+    }
+    return NextResponse.redirect(new URL('/error/404', req.url));
   }
 }
 
 export const config = {
-  matcher: ['/story/:path*'],
+  matcher: ['/story/:path*', '/admin/:path*', '/user/:path*', '/login'],
 };

@@ -2,8 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { login } from '../utils/auth';
-import Typewriter from '../components/typewriter';
 import { useState } from 'react';
+import PageWrapper from '../components/PageWrapper';
 
 export default function LoginPage() {
   const router = useRouter();
@@ -18,28 +18,19 @@ export default function LoginPage() {
 
     try {
       await login({ email, password });
-      router.push('/');
+      router.push('/story');
     } catch (err) {
       setErr(err.message || 'Something went wrong');
     }
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h1 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-base-content items-center pb-4">
-        {''}
-        <Typewriter text="login" delay={100} />
-      </h1>
+    <PageWrapper title="Login" centerContent={true} err={err}>
       <form
         onSubmit={handleSubmit}
-        className="card w-full max-w-sm bg-base-100 p-4"
+        className="card w-full max-w-sm md:max-w-md lg:max-w-lg rounded-lg p-7 m-5 bg-base-200"
       >
-        {err && (
-          <div className="alert alert-error mb-4">
-            <span>{err}</span>
-          </div>
-        )}
-        <div className="form-control mb-4">
+        <div className="form-control mb-4 ">
           <label className="label">
             <span className="label-text">Email</span>
           </label>
@@ -47,6 +38,7 @@ export default function LoginPage() {
             type="email"
             name="email"
             placeholder="Enter your email"
+            aria-label="Email Address"
             className="input input-bordered"
             required
           />
@@ -59,14 +51,28 @@ export default function LoginPage() {
             type="password"
             name="password"
             placeholder="Enter your password"
+            aria-label="Password"
             className="input input-bordered"
             required
           />
+          <div className="text-left mt-3">
+            <a
+              href="/recover"
+              className="link link-info text-sm hover:text-secondary-focus"
+              aria-label="Forgot Password Link"
+            >
+              Forgot your password?
+            </a>
+          </div>
         </div>
-        <button type="submit" className="btn btn-primary w-full">
+        <button
+          type="submit"
+          className="btn btn-accent w-full"
+          aria-label="Login Button"
+        >
           Login
         </button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }

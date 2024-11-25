@@ -32,3 +32,8 @@ export const recovery = {
 export async function fetchUsers() {
   return makeRequest('admin/users', 'GET');
 }
+
+export async function logout() {
+  return makeRequest('/logout', 'POST');
+}
+

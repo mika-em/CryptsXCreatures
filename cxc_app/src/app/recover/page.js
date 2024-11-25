@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { recovery } from '../utils/auth';
 import { useRouter } from 'next/navigation';
+import PageWrapper from '../components/PageWrapper';
 
 export default function RecoverPage() {
   const [loading, setLoading] = useState(false);
@@ -10,6 +11,7 @@ export default function RecoverPage() {
   const [step, setStep] = useState(1);
   const [recoveryQuestion, setRecoveryQuestion] = useState('');
   const router = useRouter();
+  const [success, setSuccess] = useState(null);
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,7 +19,6 @@ export default function RecoverPage() {
     setLoading(true);
 
     const formData = new FormData(e.currentTarget);
-
     const email = formData.get('email');
     const recoveryAnswer = formData.get('recoveryAnswer');
     const newPassword = formData.get('password');
@@ -57,7 +58,7 @@ export default function RecoverPage() {
 
       try {
         await recovery.resetPassword({ email, newPassword });
-        setErr('Password successfully reset!');
+        setSuccess('Password successfully reset!');
         setTimeout(() => router.push('/login'), 3000);
       } catch (err) {
         setErr(err.message || 'There was an issue resetting your password.');
@@ -68,20 +69,16 @@ export default function RecoverPage() {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-base-200 p-8">
-      <h2 className="text-4xl font-bold mb-6 text-base-content">
-        {step === 1 && 'Recover Password'}
-        {step === 2 && 'Recover Password'}
-        {step === 3 && 'Recover Password'}
-      </h2>
-
-      <form onSubmit={handleSubmit} className="card w-full max-w-md bg-base-100 p-6 shadow-md">
-        {err && (
-          <div className="alert alert-error mb-4">
-            <span>{err}</span>
-          </div>
-        )}
-
+    <PageWrapper
+      title="Recover Password"
+      centerContent={true}
+      err={err}
+      success={success}
+    >
+      <form
+        onSubmit={handleSubmit}
+        className="card w-full max-w-sm md:max-w-md lg:max-w-lg rounded-lg p-7 mx-auto bg-base-200"
+      >
         {step === 1 && (
           <>
             <div className="form-control mb-4">
@@ -153,11 +150,12 @@ export default function RecoverPage() {
 
         <button
           type="submit"
-          className={`btn btn-primary w-full ${loading ? 'btn-disabled' : ''}`}
+          className="btn btn-accent w-full"
+          disabled={loading}
         >
           {loading ? <span className="loading loading-ring"></span> : 'Submit'}
         </button>
       </form>
-    </div>
+    </PageWrapper>
   );
 }
