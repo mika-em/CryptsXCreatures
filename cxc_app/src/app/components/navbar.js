@@ -1,22 +1,35 @@
 'use client';
 import Link from 'next/link';
 import { FaPenNib } from 'react-icons/fa';
-import { useAuth } from '../hooks/useAuth';
 import { logout } from '../utils/auth';
+import { useRedirectBasedOnRole } from '../hooks/useRedirect';
 import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 export default function Navbar() {
-  const { user } = useAuth();
   const router = useRouter();
+  const { roleChecked, isAdmin, authenticated } = useRedirectBasedOnRole();
+  const [userLoggedIn, setUserLoggedIn] = useState(false);
+
+  useEffect(() => {
+    if (roleChecked) {
+      setUserLoggedIn(authenticated);
+    }
+  }, [roleChecked, authenticated]);
 
   const handleLogout = async () => {
     try {
       await logout();
       router.push('/');
+      setUserLoggedIn(false);
     } catch (error) {
       console.error('Logout failed:', error.message);
     }
   };
+
+  if (!roleChecked) {
+    return null;
+  }
 
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
@@ -33,7 +46,7 @@ export default function Navbar() {
 
       <div className="flex-none">
         <ul className="menu menu-horizontal px-1">
-          {user ? (
+          {userLoggedIn ? (
             <>
               <li>
                 <Link
@@ -44,14 +57,25 @@ export default function Navbar() {
                   Generate
                 </Link>
               </li>
-              {user.role === 'admin' && (
+              {!isAdmin && (
                 <li>
                   <Link
-                    href="/admin-dashboard"
+                    href="/user/dashboard"
                     className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
-                    aria-label="Users"
+                    aria-label="Dashboard"
                   >
-                    Admin
+                    Dashboard
+                  </Link>
+                </li>
+              )}
+              {isAdmin && (
+                <li>
+                  <Link
+                    href="/admin/dashboard"
+                    className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                    aria-label="Admin"
+                  >
+                    Admin Dashboard
                   </Link>
                 </li>
               )}

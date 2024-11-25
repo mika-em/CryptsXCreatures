@@ -120,7 +120,11 @@ export default function RegisterPage() {
           className={`btn  btn-accent w-full ${loading ? 'btn-disabled opacity-75' : ''}`}
           disabled={loading}
         >
-          {loading ? <span className="loading loading-ring"></span> : 'Register'}
+          {loading ? (
+            <span className="loading loading-ring"></span>
+          ) : (
+            'Register'
+          )}
         </button>
       </form>
     </PageWrapper>

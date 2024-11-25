@@ -7,7 +7,7 @@ export default function AppContent({ children }) {
   const { loading } = useAuth();
 
   if (loading) {
-    return <Loading />; 
+    return <Loading />;
   }
 
   return <>{children}</>;

@@ -1,6 +1,6 @@
 export default function UserTable({ users }) {
   return (
-<div className="overflow-x-auto overflow-y-auto max-h-96 pt-5 border-base-content rounded-md shadow-xl p-4">
+    <div className="overflow-x-auto overflow-y-auto max-h-96 pt-5 border-base-content rounded-md shadow-xl p-4">
       <table className="table table-zebra w-full">
         <thead>
           <tr>

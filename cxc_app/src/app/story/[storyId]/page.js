@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { useParams } from 'next/navigation'; 
+import { useParams } from 'next/navigation';
 import { getStories, generateStory } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
 
 export default function ContinueStory() {
-  const { storyId } = useParams(); 
+  const { storyId } = useParams();
   const [story, setStory] = useState(null);
   const [newPrompt, setNewPrompt] = useState('');
   const [updatedStory, setUpdatedStory] = useState('');
@@ -22,7 +22,7 @@ export default function ContinueStory() {
         const stories = await getStories();
         const currentStory = stories.find(
           (item) => item.storyId === parseInt(storyId, 10)
-        ); 
+        );
 
         if (!currentStory) {
           setError('Story not found!');
@@ -48,7 +48,7 @@ export default function ContinueStory() {
 
     try {
       const result = await generateStory(newPrompt, storyId);
-      setUpdatedStory(result.text); 
+      setUpdatedStory(result.text);
     } catch (err) {
       console.error('Error generating story:', err.message);
       setError('Failed to generate the next part of the story.');
@@ -58,10 +58,7 @@ export default function ContinueStory() {
   };
 
   if (loading) {
-    return (
-      <PageWrapper title="Loading Story..." centerContent>
-      </PageWrapper>
-    );
+    return <PageWrapper title="Loading Story..." centerContent></PageWrapper>;
   }
 
   return (

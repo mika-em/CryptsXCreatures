@@ -20,7 +20,9 @@ export async function generateStory(prompt, storyId = null) {
 
 export async function generateStoryFromAudio(prompt) {
   try {
-    const response = await makeMultipartRequest('voicegenerate', 'POST', { prompt });
+    const response = await makeMultipartRequest('voicegenerate', 'POST', {
+      prompt,
+    });
     if (response && response.response_plain_text) {
       return response.response_plain_text;
     }
@@ -30,7 +32,6 @@ export async function generateStoryFromAudio(prompt) {
     throw new Error(error.message || 'Failed to generate a story.');
   }
 }
-
 
 export async function getStories() {
   try {

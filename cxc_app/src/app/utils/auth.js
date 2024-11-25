@@ -36,4 +36,3 @@ export async function fetchUsers() {
 export async function logout() {
   return makeRequest('/logout', 'POST');
 }
-

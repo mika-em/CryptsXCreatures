@@ -97,7 +97,7 @@ class Users {
         }
         if (results.length > 0) {
           const user = results[0];
-          const match = await bcrypt.compare(password, user.password); // Compare the provided password with the hashed password
+          const match = await bcrypt.compare(password, user.password); 
           if (match) {
             const token = this.generateJWT(user);
             resolve({ email: user.email, token });

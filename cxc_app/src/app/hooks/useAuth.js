@@ -1,55 +1,37 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
 import { API } from '../constants/api';
 
 export function useAuth() {
-  const [user, setUser] = useState(null);
+  const [authenticated, setAuthenticated] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const router = useRouter();
-  const pathname = usePathname();
-
-  const publicRoutes = ['/', '/login', '/register'];
 
   useEffect(() => {
-
-    if (publicRoutes.includes(pathname)) {
-      setLoading(false);
-      return;
-    }
-
-    async function fetchUser() {
+    async function validateJWT() {
       try {
         const res = await fetch(`${API}/verifyjwt`, {
           method: 'GET',
           credentials: 'include',
         });
 
-        if (!res.ok) {
-          if (res.status === 500) {
-            setError('Server error occurred. Please try again later.');
-            router.push('/500');
-          } else {
-            setError('Unauthorized access.');
-            router.push('/404');
-          }
-          return;
+        if (res.ok) {
+          const text = await res.text();
+          setAuthenticated(text === 'Welcome!');
+        } else {
+          setAuthenticated(false);
         }
-
-        const userData = await res.json();
-        setUser(userData);
-      } catch (e) {
-        console.error('Auth error:', e.message);
-        setError('An unexpected error occurred.');
+      } catch (err) {
+        console.error('JWT validation error:', err.message);
+        setError('Failed to validate session.');
       } finally {
         setLoading(false);
       }
     }
 
-    fetchUser();
-  }, [pathname, router]);
+    validateJWT();
+  }, []);
 
-  return { user, loading, error };
+  return { authenticated, loading, error };
 }

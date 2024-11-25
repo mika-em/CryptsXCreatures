@@ -1,13 +1,14 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { login } from '../utils/auth';
 import { useState } from 'react';
 import PageWrapper from '../components/PageWrapper';
+import { useRedirectBasedOnRole } from '../hooks/useRedirect';
+import { login } from '../utils/auth';
 
 export default function LoginPage() {
-  const router = useRouter();
   const [err, setErr] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const { roleChecked } = useRedirectBasedOnRole();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -16,12 +17,27 @@ export default function LoginPage() {
     const email = formData.get('email');
     const password = formData.get('password');
 
+    setErr(null);
+    setLoading(true);
+
     try {
+      console.log(`Attempting login with email: ${email}`);
       await login({ email, password });
-      router.push('/story');
+      console.log('Login successful.');
     } catch (err) {
-      setErr(err.message || 'Something went wrong');
+      console.error('Login failed:', err.message);
+      setErr(err.message || 'Invalid email or password');
+    } finally {
+      setLoading(false);
     }
+  }
+
+  if (!roleChecked) {
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-base-200 text-center">
+        <p className="text-xl font-medium">Loading...</p>
+      </div>
+    );
   }
 
   return (
@@ -30,7 +46,7 @@ export default function LoginPage() {
         onSubmit={handleSubmit}
         className="card w-full max-w-sm md:max-w-md lg:max-w-lg rounded-lg p-7 m-5 bg-base-200"
       >
-        <div className="form-control mb-4 ">
+        <div className="form-control mb-4">
           <label className="label">
             <span className="label-text">Email</span>
           </label>
@@ -38,9 +54,9 @@ export default function LoginPage() {
             type="email"
             name="email"
             placeholder="Enter your email"
-            aria-label="Email Address"
             className="input input-bordered"
             required
+            disabled={loading}
           />
         </div>
         <div className="form-control mb-4">
@@ -51,26 +67,17 @@ export default function LoginPage() {
             type="password"
             name="password"
             placeholder="Enter your password"
-            aria-label="Password"
             className="input input-bordered"
             required
+            disabled={loading}
           />
-          <div className="text-left mt-3">
-            <a
-              href="/recover"
-              className="link link-info text-sm hover:text-secondary-focus"
-              aria-label="Forgot Password Link"
-            >
-              Forgot your password?
-            </a>
-          </div>
         </div>
         <button
           type="submit"
-          className="btn btn-accent w-full"
-          aria-label="Login Button"
+          className={`btn btn-accent w-full ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
+          disabled={loading}
         >
-          Login
+          {loading ? 'Logging in...' : 'Login'}
         </button>
       </form>
     </PageWrapper>
