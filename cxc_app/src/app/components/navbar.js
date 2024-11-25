@@ -2,9 +2,21 @@
 import Link from 'next/link';
 import { FaPenNib } from 'react-icons/fa';
 import { useAuth } from '../hooks/useAuth';
+import { logout } from '../utils/auth';
+import { useRouter } from 'next/navigation';
 
 export default function Navbar() {
   const { user } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      router.push('/');
+    } catch (error) {
+      console.error('Logout failed:', error.message);
+    }
+  };
 
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
@@ -44,13 +56,13 @@ export default function Navbar() {
                 </li>
               )}
               <li>
-                <Link
-                  href="/logout"
+                <button
+                  onClick={handleLogout}
                   className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
                   aria-label="Logout"
                 >
                   Logout
-                </Link>
+                </button>
               </li>
             </>
           ) : (
