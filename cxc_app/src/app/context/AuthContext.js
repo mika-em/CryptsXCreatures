@@ -7,31 +7,13 @@ const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [authenticated, setAuthenticated] = useState(false);
+  const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [isAdmin, setIsAdmin] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchAdminStatus = async () => {
-    try {
-      const res = await fetch(`${API}/admin/users`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-      return res.ok;
-    } catch (err) {
-      console.error('Admin status fetch error:', err.message);
-      return false;
-    }
-  };
-
-  const updateAuthStatus = async (isAuthenticated, checkAdmin = true) => {
+  const updateAuthStatus = async (isAuthenticated, userRole = null) => {
     setAuthenticated(isAuthenticated);
-    if (isAuthenticated && checkAdmin) {
-      const adminStatus = await fetchAdminStatus();
-      setIsAdmin(adminStatus);
-    } else {
-      setIsAdmin(false);
-    }
+    setRole(userRole);
   };
 
   useEffect(() => {
@@ -47,21 +29,18 @@ export const AuthProvider = ({ children }) => {
           const isAuthenticated = text === 'Welcome!';
           setAuthenticated(isAuthenticated);
 
-          if (isAuthenticated) {
-            const adminStatus = await fetchAdminStatus();
-            setIsAdmin(adminStatus);
-          } else {
-            setIsAdmin(false);
+          if (!isAuthenticated) {
+            setRole(null);
           }
         } else {
           setAuthenticated(false);
-          setIsAdmin(false);
+          setRole(null);
         }
       } catch (err) {
         console.error('JWT validation error:', err.message);
         setError('Failed to validate session.');
         setAuthenticated(false);
-        setIsAdmin(false);
+        setRole(null);
       } finally {
         setLoading(false);
       }
@@ -74,8 +53,9 @@ export const AuthProvider = ({ children }) => {
     <AuthContext.Provider
       value={{
         authenticated,
+        role,
+        isAdmin: role === 'admin',
         loading,
-        isAdmin,
         error,
         updateAuthStatus,
       }}

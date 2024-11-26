@@ -1,23 +1,16 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import PageWrapper from '../components/PageWrapper';
 import { login } from '../utils/auth';
 import { useRouter } from 'next/navigation';
-import Loading from '../components/loading';
 import { useAuthContext } from '../context/AuthContext';
 
 export default function LoginPage() {
   const [err, setErr] = useState(null);
   const [loading, setLoading] = useState(false);
   const router = useRouter();
-  const { authenticated, loading: authLoading, updateAuthStatus } = useAuthContext();
-
-  useEffect(() => {
-    if (!authLoading && authenticated) {
-      router.push('/');
-    }
-  }, [authenticated, authLoading, router]);
+  const { updateAuthStatus } = useAuthContext();
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -30,9 +23,8 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      console.log(`Attempting login with email: ${email}`);
-      await login({ email, password });
-      await updateAuthStatus(true);
+      const { role } = await login({ email, password });
+      await updateAuthStatus(true, role); 
       router.push('/');
     } catch (err) {
       console.error('Login failed:', err.message);
@@ -40,10 +32,6 @@ export default function LoginPage() {
     } finally {
       setLoading(false);
     }
-  }
-
-  if (authLoading || loading) {
-    return <Loading />;
   }
   return (
     <PageWrapper title="Login" centerContent={true} err={err}>
