@@ -22,10 +22,9 @@ export default function AdminPage() {
   const router = useRouter();
 
   useEffect(() => {
-    if (authLoading || !authenticated) return;
-    if (!isAdmin) {
-      console.error('Access denied: User is not an admin.');
-      router.push('/error/403');
+    if (authLoading) return; 
+    if (!authenticated || !isAdmin) {
+      router.push('/error/404');
       return;
     }
 
