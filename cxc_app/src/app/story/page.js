@@ -6,6 +6,7 @@ import { useAuthContext } from '../context/AuthContext';
 import { generateStory } from '../utils/story';
 import PageWrapper from '../components/PageWrapper';
 import Loading from '../components/loading';
+import CallCountAlert from '../components/alert';
 
 export default function StoryPage() {
   const [prompt, setPrompt] = useState('');
@@ -68,6 +69,7 @@ export default function StoryPage() {
       error={error}
       success={story ? 'Story updated successfully!' : null}
     >
+      <CallCountAlert />
       <div className="card w-full max-w-2xl bg-base-200 p-6 shadow-md">
         {story && (
           <div className="mb-4 text-right">
@@ -84,7 +86,10 @@ export default function StoryPage() {
         <div className="story-content mb-4 p-4 bg-base-100 rounded-lg max-h-96 overflow-y-auto">
           {story ? (
             story.split('\n').map((line, index) => (
-              <p key={index} className="text-base-content text-lg leading-relaxed">
+              <p
+                key={index}
+                className="text-base-content text-lg leading-relaxed"
+              >
                 {line}
               </p>
             ))
@@ -97,7 +102,9 @@ export default function StoryPage() {
 
         <textarea
           className="textarea text-base-content text-xl p-4 mb-4 h-24"
-          placeholder={story ? 'Continue your story...' : 'Type your prompt here...'}
+          placeholder={
+            story ? 'Continue your story...' : 'Type your prompt here...'
+          }
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           aria-label="Story input"
