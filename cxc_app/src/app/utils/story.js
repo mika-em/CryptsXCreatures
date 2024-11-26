@@ -10,9 +10,15 @@ export async function generateStory(prompt, storyId = null) {
         text: response.response_plain_text.trim(),
         callCount: response.callCount,
         storyId: response.storyId,
+        history: response.history || '',
       };
     }
-    return { text: 'No response received', callCount: 0, storyId: null };
+    return {
+      text: 'No response received',
+      callCount: 0,
+      storyId: null,
+      history: '',
+    };
   } catch (error) {
     console.error('Error generating story:', error.message);
     throw new Error(error.message || 'Failed to generate a story.');
@@ -47,7 +53,6 @@ export async function getStories() {
     throw new Error(error.message || 'Failed to fetch stories.');
   }
 }
-
 
 export async function fetchCallCount() {
   try {

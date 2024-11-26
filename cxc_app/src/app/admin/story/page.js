@@ -1,115 +1,112 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRedirectBasedOnRole } from '../../hooks/useRedirect';
-import { getStories } from '../../utils/story';
+import { useRouter, useParams } from 'next/navigation';
+import { generateStory } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
-import Link from 'next/link';
 import Loading from '../../components/loading';
 
-export default function AdminStoryDashboard() {
-  const { authenticated, isAdmin, roleChecked } = useRedirectBasedOnRole();
-  const [stories, setStories] = useState([]);
-  const [loadingStories, setLoadingStories] = useState(true);
+export default function AdminContinueStoryPage() {
+  const { storyId } = useParams();
+  const [history, setHistory] = useState('');
+  const [newPrompt, setNewPrompt] = useState('');
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
-    async function fetchAdminStories() {
-      if (!authenticated || !isAdmin) {
-        return;
-      }
+    async function fetchStoryHistory() {
+      setLoading(true);
+      setError(null);
 
       try {
-        const storiesData = await getStories();
-        setStories(storiesData);
-      } catch (e) {
-        console.error("Error fetching admin's stories:", e.message);
-        setError('Failed to load stories. Please try again later.');
+        const result = await generateStory('', storyId);
+        if (!result.history) {
+          setError('Error Loading History');
+        }
+        setHistory(result.history);
+      } catch (err) {
+        console.error('Error fetching story history:', err.message);
+        setError('Failed to load the story. Redirecting...');
+        setTimeout(() => router.push('/admin/dashboard'), 3000);
       } finally {
-        setLoadingStories(false);
+        setLoading(false);
       }
     }
 
-    if (roleChecked && authenticated && isAdmin) {
-      fetchAdminStories();
+    fetchStoryHistory();
+  }, [storyId, router]);
+
+  const handleContinue = async () => {
+    if (!newPrompt) return;
+
+    setLoading(true);
+    setError(null);
+
+    try {
+      const result = await generateStory(newPrompt, storyId);
+      if (result?.text) {
+        const updatedPart = `${newPrompt} ${result.text}`;
+        setHistory((prevHistory) => `${prevHistory} ${updatedPart}`);
+      } else {
+        setError('Error. Try again later');
+      }
+      setNewPrompt('');
+    } catch (e) {
+      setError('Error. Try again later');
+    } finally {
+      setLoading(false);
     }
-  }, [authenticated, isAdmin, roleChecked]);
+  };
 
-  if (!roleChecked || loadingStories) {
+  if (loading && !history) {
     return <Loading />;
-  }
-
-  if (!authenticated || !isAdmin) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
-        <p className="text-xl font-medium">
-          Unauthorized access. Please log in as an admin to view this dashboard.
-        </p>
-        <Link href="/login" className="btn btn-primary mt-4">
-          Go to Login
-        </Link>
-      </div>
-    );
-  }
-
-  if (error) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
-        <p className="text-xl font-medium text-error">{error}</p>
-        <Link href="/" className="btn btn-primary mt-4">
-          Go to Home
-        </Link>
-      </div>
-    );
   }
 
   return (
     <PageWrapper
-      title="Admin Stories"
-      success={stories.length > 0 ? 'Stories loaded.' : null}
-      centerContent
+      title={`Continue Story #${storyId}`}
+      error={error}
+      success={!error && history ? 'Story updated successfully!' : null}
+      centerContent={true}
     >
-      <div>
-        <div className="overflow-x-auto justify-center items-center overflow-y-auto max-h-96 pt-5 border-base-content rounded-md shadow-xl p-4">
-          <table className="table table-zebra w-full">
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Story ID</th>
-                <th>First Prompt</th>
-                <th>Created At</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody className="mb-5">
-              {stories.length > 0 ? (
-                stories.map((story, index) => (
-                  <tr key={story.storyId} className="hover">
-                    <td className="justify-center items-center">{index + 1}</td>
-                    <td>{story.storyId}</td>
-                    <td>{story.first_prompt}</td>
-                    <td>{new Date(story.created_at).toLocaleString()}</td>
-                    <td className="text-center">
-                      <Link
-                        href={`/admin/story/${story.storyId}`}
-                        className="btn btn-primary btn-sm"
-                        aria-label={`Continue story with ID ${story.storyId}`}
-                      >
-                        Continue Story
-                      </Link>
-                    </td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan="5" className="text-center">
-                    No stories yet! Start generating one.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+      <div className="card w-full max-w-2xl bg-base-200 p-6 shadow-md">
+        <h2 className="text-xl font-bold mb-4">Current Story</h2>
+        <div className="story-content mb-4 p-4 bg-base-100 rounded-lg max-h-96 overflow-y-auto">
+          {history ? (
+            history.split('\n').map((line, index) => (
+              <p
+                key={index}
+                className="text-base-content text-lg leading-relaxed"
+              >
+                {line}
+              </p>
+            ))
+          ) : (
+            <p className="text-alert">Story history not available.</p>
+          )}
         </div>
+
+        <h2 className="text-xl font-bold mb-4">Add to Story</h2>
+        <textarea
+          value={newPrompt}
+          onChange={(e) => setNewPrompt(e.target.value)}
+          placeholder="Enter the next part of the story..."
+          className="textarea text-base-content text-lg w-full mb-4 p-4"
+          rows={5}
+          disabled={loading}
+        />
+        <button
+          onClick={handleContinue}
+          className={`btn btn-accent w-full ${loading ? 'btn-disabled' : ''}`}
+          disabled={loading || !newPrompt}
+        >
+          {loading ? (
+            <span className="loading loading-lg loading-infinity"></span>
+          ) : (
+            'Continue Story'
+          )}
+        </button>
       </div>
     </PageWrapper>
   );

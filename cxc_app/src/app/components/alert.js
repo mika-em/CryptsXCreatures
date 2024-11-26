@@ -32,15 +32,15 @@ export default function CallCountAlert({ max = 20 }) {
           style={{ maxWidth: 'fit-content', zIndex: 1050 }}
         >
           <span className="">
-            ⚠️  You have used <strong>{callCount}</strong> story generation
+            ⚠️ You have used <strong>{callCount}</strong> story generation
             calls!
-                </span>
+          </span>
           <button
             onClick={() => setShowAlert(false)}
             className="btn btn-xs btn-ghost p-0 ml-2"
             aria-label="Close alert"
           >
-            <FiX className="text-lg" /> 
+            <FiX className="text-lg" />
           </button>
         </div>
       )}
