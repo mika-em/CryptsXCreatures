@@ -6,14 +6,23 @@ import { getStories } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
 import Link from 'next/link';
 import Loading from '@/app/components/loading';
+import { useRouter } from 'next/navigation';
 
 export default function UserDashboard() {
   const { authenticated, isAdmin, roleChecked } = useRedirectBasedOnRole();
   const [stories, setStories] = useState([]);
   const [loadingStories, setLoadingStories] = useState(true);
   const [error, setError] = useState(null);
+  const router = useRouter();
 
   useEffect(() => {
+    // Redirect admins to the admin dashboard
+    if (roleChecked && authenticated && isAdmin) {
+      router.push('/admin/dashboard');
+      return;
+    }
+
+    // Fetch user stories if not an admin
     async function fetchStories() {
       if (!authenticated || isAdmin) {
         return;
@@ -33,13 +42,13 @@ export default function UserDashboard() {
     if (roleChecked && authenticated && !isAdmin) {
       fetchStories();
     }
-  }, [authenticated, isAdmin, roleChecked]);
+  }, [authenticated, isAdmin, roleChecked, router]);
 
   if (!roleChecked || loadingStories) {
     return <Loading />;
   }
 
-  if (!authenticated || isAdmin) {
+  if (!authenticated) {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
         <p className="text-xl font-medium">

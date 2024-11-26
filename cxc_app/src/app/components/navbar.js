@@ -9,20 +9,20 @@ import { useEffect, useState } from 'react';
 
 export default function Navbar() {
   const { authenticated, isAdmin, loading, updateAuthStatus } =
-    useAuthContext(); // Extract context
+    useAuthContext();
   const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
     if (!loading) {
-      setIsReady(true); 
+      setIsReady(true);
     }
   }, [loading]);
 
   const handleLogout = async () => {
     try {
       await logout();
-      updateAuthStatus(false, false); 
+      updateAuthStatus(false, false);
       router.push('/');
     } catch (error) {
       console.error('Logout failed:', error.message);
@@ -30,10 +30,8 @@ export default function Navbar() {
   };
 
   if (loading || !isReady) {
-    return null; 
+    return null;
   }
-  console.log('Authenticated:', authenticated);
-  console.log('Admin:', isAdmin);
 
   return (
     <div className="navbar bg-base-300 text-white shadow-md sticky top-0 z-50">
@@ -51,11 +49,20 @@ export default function Navbar() {
                 <>
                   <li>
                     <Link
+                      href="/story"
+                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
+                      aria-label="Generate Story"
+                    >
+                      Generate
+                    </Link>
+                  </li>
+                  <li>
+                    <Link
                       href="/admin/dashboard"
                       className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
                       aria-label="Admin Dashboard"
                     >
-                      Dashboard
+                      Users
                     </Link>
                   </li>
                   <li>
@@ -64,12 +71,13 @@ export default function Navbar() {
                       className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
                       aria-label="Admin Stories"
                     >
-                      Stories
+                      Dashboard
                     </Link>
                   </li>
                 </>
               ) : (
                 <>
+                  {/* User-specific links */}
                   <li>
                     <Link
                       href="/story"
@@ -90,6 +98,7 @@ export default function Navbar() {
                   </li>
                 </>
               )}
+              {/* Logout */}
               <li>
                 <button
                   onClick={handleLogout}

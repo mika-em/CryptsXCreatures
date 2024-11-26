@@ -49,7 +49,7 @@ export default function AdminPage() {
   }
 
   return (
-    <PageWrapper title="Admin Dashboard" centerContent={true}>
+    <PageWrapper title="User List" centerContent={true}>
       <UserTable users={users} />
     </PageWrapper>
   );

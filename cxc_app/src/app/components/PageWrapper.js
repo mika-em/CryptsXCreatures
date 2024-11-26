@@ -1,8 +1,9 @@
 'use client';
 
 import { useEffect } from 'react';
-import Typewriter from './typewriter';
 import { toast } from 'react-hot-toast';
+import Typewriter from './typewriter';
+
 export default function PageWrapper({
   title,
   children,
@@ -11,13 +12,32 @@ export default function PageWrapper({
   success = null,
 }) {
   useEffect(() => {
+    const toastOptions = {
+      id: 'unique-toast-id',
+      duration: 3000,
+    };
+
     if (error) {
-      toast.error(error, { icon: '⚠️' });
+      toast.error(error, {
+        ...toastOptions,
+        icon: '⚠️',
+        style: {
+          cursor: 'pointer',
+        },
+      });
     }
+
     if (success) {
-      toast.success(success, { icon: '🎉' });
+      toast.success(success, {
+        ...toastOptions,
+        icon: '🎉',
+        style: {
+          cursor: 'pointer',
+        },
+      });
     }
   }, [error, success]);
+
   return (
     <div
       className={`flex flex-col ${

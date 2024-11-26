@@ -1,19 +1,18 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
-import { register } from '../utils/auth';
 import { useState } from 'react';
 import PageWrapper from '../components/PageWrapper';
+import { register } from '../utils/auth';
+import { useRouter } from 'next/navigation';
 
 export default function RegisterPage() {
-  const router = useRouter();
   const [err, setErr] = useState(null);
+  const [success, setSuccess] = useState(null); // State for success message
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setErr(null);
-    setLoading(true);
 
     const formData = new FormData(e.currentTarget);
     const email = formData.get('email');
@@ -24,34 +23,38 @@ export default function RegisterPage() {
 
     if (password !== confirmPassword) {
       setErr("The passwords don't match!");
-      setLoading(false);
       return;
     }
-
-    if (password.length < 8) {
-      setErr('Password must be at least 8 characters long!');
-      setLoading(false);
-      return;
-    }
-
     if (!recoveryQuestion || !recoveryAnswer) {
       setErr('Recovery question and answer are required!');
-      setLoading(false);
       return;
     }
 
+    setErr(null);
+    setLoading(true);
+
     try {
+      console.log('Attempting to register:', { email, recoveryQuestion });
       await register({ email, password, recoveryQuestion, recoveryAnswer });
-      router.push('/');
-    } catch (err) {
-      setErr(err.message || 'Something went wrong');
+      setSuccess('Registration successful! Redirecting to login...');
+      setTimeout(() => {
+        router.push('/login');
+      }, 3000);
+    } catch (error) {
+      console.error('Registration failed:', error.message);
+      setErr(error.message || 'Something went wrong');
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <PageWrapper title="Register" centerContent={true} err={err}>
+    <PageWrapper
+      title="Register"
+      centerContent={true}
+      error={err}
+      success={success}
+    >
       <form
         onSubmit={handleSubmit}
         className="card w-full max-w-sm md:max-w-md lg:max-w-lg rounded-lg p-7 mx-auto bg-base-200"
@@ -117,11 +120,11 @@ export default function RegisterPage() {
         </div>
         <button
           type="submit"
-          className={`btn  btn-accent w-full ${loading ? 'btn-disabled opacity-75' : ''}`}
+          className={`btn btn-accent w-full ${loading ? 'btn-disabled opacity-75' : ''}`}
           disabled={loading}
         >
           {loading ? (
-            <span className="loading loading-ring"></span>
+            <span className="loading loading-infinity"></span>
           ) : (
             'Register'
           )}

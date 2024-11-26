@@ -1,20 +1,20 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRedirectBasedOnRole } from '../../hooks/useRedirect'
+import { useRedirectBasedOnRole } from '../../hooks/useRedirect';
 import { getStories } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
 import Link from 'next/link';
 import Loading from '../../components/loading';
 
-export default function AdminStoryPage() {
+export default function AdminStoryDashboard() {
   const { authenticated, isAdmin, roleChecked } = useRedirectBasedOnRole();
   const [stories, setStories] = useState([]);
   const [loadingStories, setLoadingStories] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    async function fetchStories() {
+    async function fetchAdminStories() {
       if (!authenticated || !isAdmin) {
         return;
       }
@@ -31,7 +31,7 @@ export default function AdminStoryPage() {
     }
 
     if (roleChecked && authenticated && isAdmin) {
-      fetchStories();
+      fetchAdminStories();
     }
   }, [authenticated, isAdmin, roleChecked]);
 
@@ -43,7 +43,7 @@ export default function AdminStoryPage() {
     return (
       <div className="flex items-center justify-center min-h-screen bg-base-300 text-center">
         <p className="text-xl font-medium">
-          Unauthorized access. Please log in as an admin to view this page.
+          Unauthorized access. Please log in as an admin to view this dashboard.
         </p>
         <Link href="/login" className="btn btn-primary mt-4">
           Go to Login
@@ -109,16 +109,6 @@ export default function AdminStoryPage() {
               )}
             </tbody>
           </table>
-        </div>
-
-        <div className="flex justify-center mt-6">
-          <Link
-            href="/story"
-            className="btn btn-sm btn-accent"
-            aria-label="Generate story"
-          >
-            Generate New Story
-          </Link>
         </div>
       </div>
     </PageWrapper>
