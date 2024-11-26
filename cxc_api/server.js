@@ -10,6 +10,8 @@ const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const StoryGenerator = require('./modules/storyGenerator');
 const Story = require('./modules/story');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('./swagger');
 
 app.use(express.json());
 app.use(cookieParser());
@@ -57,6 +59,34 @@ router.get('/verifyjwt', verifyJWT, (req, res) => {
   res.send('Welcome!');
 });
 
+/**
+* @swagger 
+* /register:
+*   post:
+*     summary: Register a new user
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email:
+*                 type: string
+*               password:
+*                 type: string
+*               recovery_question:
+*                 type: string
+*               recovery_answer:
+*                 type: string
+*     responses:
+*       201:
+*         description: User registered successfully
+*       409:
+*         description: Email already exists
+*       500:
+*         description: Server error
+*/
 router.post("/register", async (req, res) => {
   const { email, password, recovery_question, recovery_answer } = req.body;
   try {
@@ -72,6 +102,43 @@ router.post("/register", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /login:
+ *   post:
+ *     summary: User login
+ *     description: Login a user and return a JWT token.
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Successful login
+ *         headers:
+ *           Set-Cookie:
+ *             schema:
+ *               type: string
+ *             description: JWT token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 email:
+ *                   type: string
+ *                 role:
+ *                   type: string
+ *       401:
+ *         description: Invalid email or password
+ */
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
@@ -84,6 +151,51 @@ router.post("/login", async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /admin/users:
+ *   get:
+ *     summary: Get all users
+ *     description: Retrieve a list of all users (admin only).
+ *     parameters:
+ *       - in: header
+ *         name: Cookie
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   email:
+ *                     type: string
+ *                   role:
+ *                     type: string
+ *                   call_count:
+ *                     type: integer
+ *       403:
+ *         description: Access denied
+ *       500:
+ *         description: Server error
+ */
+router.get("/admin/users", verifyJWT, checkAdminRole, async (req, res) => {
+  try {
+    const results = await users.getAllUsers();
+    res.json(results);
+  } catch (err) {
+    console.error("Error retrieving users:", err);
+    res.status(500).send("Server error");
+  }
+});
 router.get("/admin/users", verifyJWT, checkAdminRole, async (req, res) => {
   try {
     const results = await users.getAllUsers();
@@ -94,12 +206,46 @@ router.get("/admin/users", verifyJWT, checkAdminRole, async (req, res) => {
   }
 });
 
+/**
+* @swagger
+* /logout:
+*   post:
+*     summary: Logout
+*     description: Invalidate the JWT token.
+*     responses:
+*       200:
+*         description: Logged out successfully
+*/
 router.post('/logout', (req, res) => {
   Utils.invalidateCookie(res, 'token');
   res.status(200).send('Logged out successfully.');
 });
 
-
+/**
+* @swagger
+* /forgotpassword:
+*   get:
+*     summary: Get recovery question
+*     description: Retrieve the recovery question for a user.
+*     parameters:
+*       - in: query
+*         name: email
+*         required: true
+*         schema:
+*           type: string
+*     responses:
+*       200:
+*         description: Successful retrieval of recovery question
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 question:
+*                   type: string
+*       500:
+*         description: Server error
+ */
 router.get('/forgotpassword', async (req, res) => {
   const { email } = req.query;
   try {
@@ -111,6 +257,31 @@ router.get('/forgotpassword', async (req, res) => {
   }
 });
 
+/**
+* @swagger
+* /verifyanswer:
+*   post:
+*     summary: Verify recovery answer
+*     description: Verify the recovery answer for a user.
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email:
+*                 type: string
+*               answer:
+*                 type: string
+*     responses:
+*       200:
+*         description: Answer verified
+*       401:
+*         description: Invalid answer
+*       500:
+*         description: Server error
+ */
 router.post("/verifyanswer", async (req, res) => {
   const { email, answer } = req.body;
   try {
@@ -147,6 +318,29 @@ const verifyResetToken = (req, res, next) => {
   );
 };
 
+/**
+* @swagger
+* /resetpassword:
+*   post:
+*     summary: Reset password
+*     description: Reset the password for the user.
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               email:
+*                 type: string
+*               newPassword:
+*                 type: string
+*     responses:
+*       200:
+*         description: Password reset successfully
+*       500:
+*         description: Server error
+ */
 router.post("/resetpassword", verifyResetToken, async (req, res) => {
   const { email, newPassword } = req.body;
   try {
@@ -159,6 +353,47 @@ router.post("/resetpassword", verifyResetToken, async (req, res) => {
   }
 });
 
+/**
+* @swagger
+* /generate:
+*   post:
+*     summary: Generate a story
+*     description: Generate a story based on a prompt.
+*     parameters:
+*       - in: cookie
+*         name: token
+*         required: true
+*         schema:
+*           type: string
+*         description: JWT token
+*     requestBody:
+*       required: true
+*       content:
+*         application/json:
+*           schema:
+*             type: object
+*             properties:
+*               prompt:
+*                 type: string
+*               storyId:
+*                 type: integer
+*     responses:
+*       200:
+*         description: Successful generation of story
+*         content:
+*           application/json:
+*             schema:
+*               type: object
+*               properties:
+*                 storyId:
+*                   type: integer
+*                 response_plain_text:
+*                   type: string
+*                 callCount:
+*                   type: integer
+*       500:
+*         description: Server error
+ */
 router.post('/generate', verifyJWT, async (req, res) => {
   const { prompt, storyId } = req.body;
   const userId = req.user.id;
@@ -171,6 +406,39 @@ router.post('/generate', verifyJWT, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /stories:
+ *   get:
+ *     summary: Get user stories
+ *     description: Retrieve stories for the authenticated user.
+ *     parameters:
+ *       - in: cookie
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of stories
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   storyId:
+ *                     type: integer
+ *                   first_prompt:
+ *                     type: string
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ *       500:
+ *         description: Server error
+ */
 router.get('/stories', verifyJWT, async (req, res) => {
   const userId = req.user.id;
   try {
@@ -194,11 +462,37 @@ router.post('/voicegenerate', verifyJWT, async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /callcount:
+ *   get:
+ *     summary: Get call count
+ *     description: Retrieve the call count for the authenticated user.
+ *     parameters:
+ *       - in: cookie
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: JWT token
+ *     responses:
+ *       200:
+ *         description: Successful retrieval of call count
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 callCount:
+ *                   type: integer
+ *       500:
+ *         description: Server error
+ */
 router.get('/callcount', verifyJWT, async (req, res) => {
   const userId = req.user.id;
   try {
     const count = await users.getCallCount(userId);
-    res.json({ callCount : count });
+    res.json({ callCount: count });
   } catch (err) {
     console.error('Error retrieving call count:', err);
     res.status(500).send('Server error');
@@ -206,6 +500,9 @@ router.get('/callcount', verifyJWT, async (req, res) => {
 });
 
 app.use(`/${apiPath}`, router);
+
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
 
 (async () => {
   try {

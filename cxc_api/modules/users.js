@@ -100,7 +100,6 @@ class Users {
           const match = await bcrypt.compare(password, user.password);
           if (match) {
             const token = this.generateJWT(user);
-            console.log('User logged in:', user.role);
             resolve({ email: user.email, role: user.role, token });
           } else {
             reject(new Error('Invalid email or password'));
