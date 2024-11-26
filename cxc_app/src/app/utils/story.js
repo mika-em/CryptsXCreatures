@@ -6,7 +6,7 @@ export async function generateStory(prompt, storyId = null) {
     const response = await makeRequest('generate', 'POST', payload);
     if (response && response.response_plain_text) {
       return {
-        text: response.response_plain_text,
+        text: response.response_plain_text.trim(),
         callCount: response.callCount,
         storyId: response.storyId,
       };

@@ -1,6 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { useAuthContext } from '../context/AuthContext';
 import { generateStory } from '../utils/story';
 import PageWrapper from '../components/PageWrapper';
 import Loading from '../components/loading';
@@ -10,6 +12,18 @@ export default function StoryPage() {
   const [storyContent, setStoryContent] = useState('');
   const [loadingStory, setLoadingStory] = useState(false);
   const [error, setError] = useState(null);
+  const { authenticated, loading: authLoading } = useAuthContext();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !authenticated) {
+      router.push('/login'); // Redirect unauthenticated users
+    }
+  }, [authenticated, authLoading, router]);
+
+  if (authLoading) {
+    return <Loading />;
+  }
 
   async function handleSubmit(e) {
     e.preventDefault();
@@ -17,11 +31,10 @@ export default function StoryPage() {
     setError(null);
 
     try {
-      setStoryContent((prevContent) => `${prevContent}\n\n ${prompt}`);
-      const response = await generateStory({ prompt });
+      const response = await generateStory(prompt);
 
       if (response?.text) {
-        setStoryContent((prevContent) => `${prevContent}\n\nAI: ${response.text}`);
+        setStoryContent(`${prompt} ${response.text}`);
       } else {
         throw new Error('Invalid response from the server');
       }
@@ -35,48 +48,54 @@ export default function StoryPage() {
     }
   }
 
-  return (
-    <PageWrapper title={'Start your journey'} centerContent>
-      <div className="card w-full max-w-2xl bg-base-200 p-6 shadow-md">
-        <div className="story-content mb-4 p-4 bg-base-100 rounded-lg max-h-96 overflow-y-auto">
-          {storyContent ? (
-            storyContent.split('\n').map((line, index) => (
-              <p key={index} className="text-base-content text-lg leading-relaxed">
-                {line}
-              </p>
-            ))
-          ) : (
-            <p className="text-base-content text-lg italic">Your story starts here...</p>
-          )}
-        </div>
+  function handleNewStory() {
+    setPrompt('');
+    setStoryContent('');
+    setError(null);
+  }
 
+  return (
+    <PageWrapper
+      title={'Start your journey'}
+      centerContent
+      error={error}
+      success={storyContent ? 'Story generated successfully!' : null}
+    >
+      <div className="card w-full max-w-2xl bg-base-200 p-6 shadow-md">
         <form onSubmit={handleSubmit} className="form-control">
           <textarea
             className="textarea text-base-content text-xl p-4 mb-4"
-            rows={5}
-            placeholder="Type your next input..."
-            value={prompt}
+            rows={10}
+            placeholder="Type your story prompt here..."
+            value={storyContent || prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            required
+            required={!storyContent} 
             aria-label="Story input"
-            disabled={loadingStory}
+            disabled={loadingStory || !!storyContent}
           />
           <button
             type="submit"
-            className={`btn btn-accent w-full ${
-              loadingStory ? 'opacity-75 cursor-not-allowed' : ''
+            className={`btn btn-accent w-full mb-4 ${
+              loadingStory || !!storyContent ? 'opacity-75 cursor-not-allowed' : ''
             }`}
-            disabled={loadingStory}
+            disabled={loadingStory || !!storyContent}
           >
             {loadingStory ? (
               <span className="loading loading-lg loading-infinity"></span>
             ) : (
-              'Continue Story'
+              'Generate Story'
             )}
           </button>
         </form>
 
-        {error && <p className="text-error mt-4">{error}</p>}
+        {storyContent && (
+          <button
+            onClick={handleNewStory}
+            className="btn btn-md btn-accent w-full"
+          >
+            Start Again
+          </button>
+        )}
       </div>
     </PageWrapper>
   );
