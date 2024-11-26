@@ -18,11 +18,9 @@ export default function AdminPage() {
 
   useEffect(() => {
     if (authLoading || !authenticated) return;
-
-    // Redirect if the user is not an admin
     if (!isAdmin) {
       console.error('Access denied: User is not an admin.');
-      router.push('/error/403'); // Redirect to 403 error page
+      router.push('/error/403');
       return;
     }
 
