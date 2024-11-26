@@ -52,6 +52,7 @@ class StoryGenerator {
               if (storyId) {
                 await story.updateContext(prompt, storyData.response_plain_text);
                 storyData.storyId = storyId;
+                storyData.context = decomposedContext;
               } else {
                 const newStory = await Story.create(userId, storyData.response_plain_text, prompt);
                 storyData.storyId = newStory.insertId;
@@ -82,10 +83,10 @@ class StoryGenerator {
   static async generateStoryFromAudio(audio_file, userId, storyId = "") {
     const formData = new FormData();
     formData.append('audio_file', audio_file, 'file');
-    
+
     const response = await fetch(SPEECH_TO_TEXT_URL, {
-        method: 'POST',
-        body: formData
+      method: 'POST',
+      body: formData
     });
 
     const responseJson = await response.json();

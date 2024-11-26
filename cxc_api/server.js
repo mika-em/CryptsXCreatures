@@ -194,6 +194,17 @@ router.post('/voicegenerate', verifyJWT, async (req, res) => {
   }
 });
 
+router.get('/callcount', verifyJWT, async (req, res) => {
+  const userId = req.user.id;
+  try {
+    const count = await users.getCallCount(userId);
+    res.json({ callCount : count });
+  } catch (err) {
+    console.error('Error retrieving call count:', err);
+    res.status(500).send('Server error');
+  }
+});
+
 app.use(`/${apiPath}`, router);
 
 (async () => {
