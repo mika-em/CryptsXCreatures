@@ -65,15 +65,6 @@ export default function Navbar() {
                       Users
                     </Link>
                   </li>
-                  <li>
-                    <Link
-                      href="/admin/story"
-                      className="px-4 font-sans text-md hover:text-accent transition-all font-medium"
-                      aria-label="Admin Stories"
-                    >
-                      Dashboard
-                    </Link>
-                  </li>
                 </>
               ) : (
                 <>

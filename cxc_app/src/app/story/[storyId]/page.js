@@ -1,65 +1,64 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { getStories, generateStory } from '../../utils/story';
+import { generateStory } from '../../utils/story';
 import PageWrapper from '../../components/PageWrapper';
-import Loading from '@/app/components/loading';
+import Loading from '../../components/loading';
 
-export default function ContinueStory() {
+export default function ContinueStoryPage() {
   const { storyId } = useParams();
-  const [story, setStory] = useState(null);
+  const [history, setHistory] = useState('');
   const [newPrompt, setNewPrompt] = useState('');
-  const [updatedStory, setUpdatedStory] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-
   const router = useRouter();
 
   useEffect(() => {
-    async function fetchStoryDetails() {
+    async function fetchStoryHistory() {
       setLoading(true);
       setError(null);
-      try {
-        const stories = await getStories();
-        const currentStory = stories.find(
-          (item) => item.storyId === parseInt(storyId, 10)
-        );
 
-        if (!currentStory) {
-          throw new Error('Story not found!');
+      try {
+        const result = await generateStory('', storyId);
+        if (!result.history) {
+          throw new Error('Story history not found!');
         }
-        setStory(currentStory);
-      } catch (err) {
-        console.error('Error fetching story:', err.message);
-        setError(err.message || 'Failed to load the story.');
-        router.push('/user-dashboard');
+        setHistory(result.history);
+      } catch (e) {
+        setError('Failed to load the story. Redirecting...');
+        setTimeout(() => router.push('/story'), 3000);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchStoryDetails();
+    fetchStoryHistory();
   }, [storyId, router]);
 
   const handleContinue = async () => {
-    setError(null);
-    setUpdatedStory('');
+    if (!newPrompt) return;
+
     setLoading(true);
+    setError(null);
 
     try {
       const result = await generateStory(newPrompt, storyId);
-      setUpdatedStory(result.text);
+      if (result?.text) {
+        const updatedPart = `${newPrompt} ${result.text}`;
+        setHistory((prevHistory) => `${prevHistory} ${updatedPart}`);
+      } else {
+        setError('Error. Try again later');
+      }
       setNewPrompt('');
     } catch (err) {
-      console.error('Error generating story:', err.message);
-      setError('Failed to generate the next part of the story.');
+      setError('Error. Try again later');
     } finally {
       setLoading(false);
     }
   };
 
-  if (loading && !story) {
+  if (loading && !history) {
     return <Loading />;
   }
 
@@ -67,53 +66,46 @@ export default function ContinueStory() {
     <PageWrapper
       title={`Continue Story #${storyId}`}
       error={error}
-      success={
-        updatedStory ? 'Next part of the story generated successfully!' : null
-      }
+      success={!error && history ? 'Story Loaded Successfully!' : null}
       centerContent={true}
     >
-      <div className="flex gap-2">
-        {story ? (
-          <div className="card  w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
-            <h2 className="text-xl font-bold mb-4">Current Story</h2>
-            <p className="text-base-content text-lg whitespace-pre-line">
-              {story.first_prompt}
-            </p>
-          </div>
-        ) : (
-          <p className="text-error">Story not found. Please try again.</p>
-        )}
-
-        <div className="card w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
-          <h2 className="text-xl font-bold mb-4">Add to Your Story</h2>
-          <textarea
-            value={newPrompt}
-            onChange={(e) => setNewPrompt(e.target.value)}
-            placeholder="Enter the next part of your story..."
-            className="textarea text-base-content text-lg w-full mb-4 p-4"
-            rows={5}
-          />
-          <button
-            onClick={handleContinue}
-            className={`btn btn-accent w-full ${loading ? 'btn-disabled' : ''}`}
-            disabled={loading || !newPrompt}
-          >
-            {loading ? (
-              <span className="loading loading-lg loading-infinity"></span>
-            ) : (
-              'Continue Story'
-            )}
-          </button>
+      <div className="card w-full max-w-2xl bg-base-200 p-6 shadow-md">
+        <h2 className="text-xl font-bold mb-4">Current Story</h2>
+        <div className="story-content mb-4 p-4 bg-base-100 rounded-lg max-h-96 overflow-y-auto">
+          {history ? (
+            history.split('\n').map((line, index) => (
+              <p
+                key={index}
+                className="text-base-content text-lg leading-relaxed"
+              >
+                {line}
+              </p>
+            ))
+          ) : (
+            <p className="text-alert">Story history not available.</p>
+          )}
         </div>
 
-        {updatedStory && (
-          <div className="card w-full max-w-2xl bg-base-100 p-6 shadow-md mt-6">
-            <h2 className="text-xl font-bold mb-4">Updated Story</h2>
-            <p className="text-base-content text-lg whitespace-pre-line">
-              {updatedStory}
-            </p>
-          </div>
-        )}
+        <h2 className="text-xl font-bold mb-4">Add to Your Story</h2>
+        <textarea
+          value={newPrompt}
+          onChange={(e) => setNewPrompt(e.target.value)}
+          placeholder="Enter the next part of the story..."
+          className="textarea text-base-content text-lg w-full mb-4 p-4"
+          rows={5}
+          disabled={loading}
+        />
+        <button
+          onClick={handleContinue}
+          className={`btn btn-accent w-full ${loading ? 'btn-disabled' : ''}`}
+          disabled={loading || !newPrompt}
+        >
+          {loading ? (
+            <span className="loading loading-lg loading-infinity"></span>
+          ) : (
+            'Continue Story'
+          )}
+        </button>
       </div>
     </PageWrapper>
   );

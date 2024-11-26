@@ -1,4 +1,5 @@
 import { makeRequest, makeMultipartRequest } from './api';
+import { API } from '../constants/api';
 
 export async function generateStory(prompt, storyId = null) {
   try {
@@ -9,9 +10,15 @@ export async function generateStory(prompt, storyId = null) {
         text: response.response_plain_text.trim(),
         callCount: response.callCount,
         storyId: response.storyId,
+        history: response.history || '',
       };
     }
-    return { text: 'No response received', callCount: 0, storyId: null };
+    return {
+      text: 'No response received',
+      callCount: 0,
+      storyId: null,
+      history: '',
+    };
   } catch (error) {
     console.error('Error generating story:', error.message);
     throw new Error(error.message || 'Failed to generate a story.');
@@ -44,5 +51,21 @@ export async function getStories() {
   } catch (error) {
     console.error('Error fetching stories:', error.message);
     throw new Error(error.message || 'Failed to fetch stories.');
+  }
+}
+
+export async function fetchCallCount() {
+  try {
+    const response = await fetch(`${API}/callcount`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch call count');
+    }
+    const data = await response.json();
+    return data.callCount;
+  } catch (err) {
+    console.error('Error fetching call count:', err.message);
+    return null;
   }
 }
