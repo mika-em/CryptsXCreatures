@@ -22,10 +22,12 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await logout();
-      updateAuthStatus(false, false);
-      router.push('/');
-    } catch (error) {
-      console.error('Logout failed:', error.message);
+      setTimeout(() => {
+        updateAuthStatus(false, false);
+        router.push('/'); 
+      }, 500);
+    } catch (e) {
+      console.error('Logout failed:', e.message);
     }
   };
 
