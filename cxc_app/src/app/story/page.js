@@ -17,7 +17,7 @@ export default function StoryPage() {
 
   useEffect(() => {
     if (!authLoading && !authenticated) {
-      router.push('/login'); // Redirect unauthenticated users
+      router.push('/login');
     }
   }, [authenticated, authLoading, router]);
 
