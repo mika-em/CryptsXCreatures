@@ -4,8 +4,7 @@ import { useEffect, useState } from 'react';
 import { fetchUsers } from '../../utils/auth';
 import UserTable from '../../components/UserTable';
 import PageWrapper from '../../components/PageWrapper';
-import { useRole } from '../../hooks/useRole';
-import { useAuth } from '../../hooks/useAuth';
+import { useAuthContext } from '../../context/AuthContext';
 import Loading from '@/app/components/loading';
 import { useRouter } from 'next/navigation';
 
@@ -13,11 +12,19 @@ export default function AdminPage() {
   const [users, setUsers] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState(null);
-  const { authenticated, loading: authLoading } = useAuth();
-  const { isAdmin, loading: roleLoading } = useRole(authenticated);
+
+  const { authenticated, isAdmin, loading: authLoading, error: authError } = useAuthContext();
   const router = useRouter();
+
   useEffect(() => {
-    if (authLoading || roleLoading || !authenticated || !isAdmin) return;
+    if (authLoading || !authenticated) return;
+
+    // Redirect if the user is not an admin
+    if (!isAdmin) {
+      console.error('Access denied: User is not an admin.');
+      router.push('/error/403'); // Redirect to 403 error page
+      return;
+    }
 
     const loadUsers = async () => {
       try {
@@ -32,14 +39,15 @@ export default function AdminPage() {
     };
 
     loadUsers();
-  }, [authenticated, isAdmin, authLoading, roleLoading]);
+  }, [authenticated, isAdmin, authLoading, router]);
 
-  if (authLoading || roleLoading || dataLoading) {
-    <Loading></Loading>;
+  if (authLoading || dataLoading) {
+    return <Loading />;
   }
 
-  if (dataError) {
-    router.push("/error/500")
+  if (dataError || authError) {
+    router.push('/error/500'); 
+    return null;
   }
 
   return (

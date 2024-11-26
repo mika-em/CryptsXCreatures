@@ -2,18 +2,15 @@
 
 import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from './useAuth';
-import { useRole } from './useRole';
+import { useAuthContext } from '../context/AuthContext';
 
 export function useRedirectBasedOnRole() {
-  const { authenticated, loading: authLoading } = useAuth();
-  const { isAdmin, loading: roleLoading } = useRole(authenticated);
+  const { authenticated, loading: authLoading, isAdmin } = useAuthContext(); // Use updated context
   const router = useRouter();
   const pathname = usePathname();
 
   useEffect(() => {
-    if (authLoading || roleLoading) return;
-
+    if (authLoading) return;
 
     if (!authenticated) {
       console.log('Redirecting to login...');
@@ -25,7 +22,7 @@ export function useRedirectBasedOnRole() {
       console.log('Redirecting user to dashboard...');
       router.push('/user/dashboard');
     }
-  }, [authenticated, isAdmin, authLoading, roleLoading, router, pathname]);
+  }, [authenticated, isAdmin, authLoading, router, pathname]);
 
-  return { authenticated, isAdmin, roleChecked: !authLoading && !roleLoading };
+  return { authenticated, isAdmin, roleChecked: !authLoading };
 }
