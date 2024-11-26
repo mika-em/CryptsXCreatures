@@ -4,8 +4,10 @@ const { STORY_URL, SPEECH_TO_TEXT_URL } = require('./constants');
 const User = require('./users');
 const Story = require('./story');
 const Utils = require('./utils');
-const FormData = require('form-data');
 const { Blob } = require('blob-polyfill');
+const axios = require('axios');
+const { Readable } = require('stream');
+const { resolve } = require('path');
 
 class StoryGenerator {
   static async generateStory(prompt, userId, storyId = "") {
@@ -81,70 +83,114 @@ class StoryGenerator {
     });
   }
 
+  // static async generateStoryFromAudio(file, userId, storyId = "") {
+  //   console.log('File:', file);
+  //   const formData = new FormData();
+
+  //   const blob = new Blob([file.buffer], { type: file.mimetype });
+  //   console.log("blob", blob);
+
+  //   formData.append('audio_file', blob, {
+  //     filename: file.originalname,
+  //     contentType: file.mimetype,
+  //   });
+
+  //   console.log("form type", formData);
+  //   console.log("form type", file.mimetype);
+
+  //   let userTranscription = '';
+
+  //   return new Promise((resolve, reject) => {
+  //     try {
+  //       const url = new URL(SPEECH_TO_TEXT_URL);
+
+  //       const options = {
+  //         hostname: url.hostname,
+  //         path: url.pathname,
+  //         method: 'POST',
+  //         family: 4,
+  //         timeout: 30000,
+  //         headers: { 
+  //           ...formData.getHeaders(),
+  //           'Content-Length': formData.getLengthSync(),
+  //         },
+  //       };
+
+  //       const request = https.request(options, (response) => {
+  //         let data = '';
+
+  //         response.on('data', (chunk) => {
+  //           data += chunk;
+  //         });
+
+  //         response.on('end', async () => {
+  //           if (response.statusCode === 200) {
+  //             try {
+  //               const responseData = JSON.parse(data);
+  //               userTranscription = responseData.transcription;
+  //               console.log('Transcription:', userTranscription);
+  //               resolve(StoryGenerator.generateStory(userTranscription, userId, storyId));
+  //             } catch (err) {
+  //               console.error('Error:', err);
+  //               reject(new Error('Error processing transcript'));
+  //             }
+  //           } else {
+  //             console.error('Error generating transcript:', data);
+  //             reject(new Error('Error generating transcript'));
+  //           }
+  //         });
+  //       });
+
+  //       request.on('error', (err) => {
+  //         console.error('Error generating transcript:', err);
+  //         reject(new Error('Server error'));
+  //       });
+
+  //       request.write(blob);
+  //       request.end();
+  //       // formData.pipe(request);
+
+  //       // request.end();
+  //     } catch (err) {
+  //       console.error('Error generating transcript:', err);
+  //       reject(new Error('Error generating transcript'));
+  //     }
+  //   });
+  // }
+
   static async generateStoryFromAudio(file, userId, storyId = "") {
-    const fileBuffer = file.buffer;
-    const audioBlob = new Blob([fileBuffer], { type: file.mimetype });
-
-    const formData = new FormData();
-    console.log('File:', file);
-    formData.append('audio_file', fileBuffer, {
-      filename: file.originalname,
-      contentType: file.mimetype,
-    });
-
-    console.log("form type", formData);
-    console.log("form type", file.mimetype);
-
-    let userTranscription = '';
-
     return new Promise((resolve, reject) => {
       try {
-        const url = new URL(SPEECH_TO_TEXT_URL);
 
-        const options = {
-          hostname: url.hostname,
-          path: url.pathname,
-          method: 'POST',
+        console.log('Buffer length:', file.buffer?.length);
+
+        const formData = new FormData();
+        const blob = new Blob([file.buffer], { type: 'audio/wav' });
+
+        // formData.append('audio_file', file.buffer, {
+        //   filename: 'file.wav',
+        //   contentType: file.mimetype,
+        // });
+
+        formData.append('audio_file', blob, 'file.wav');
+
+        console.log('Blob:', blob);
+        // console.log('Form Data:', formData);
+        // formData.append('audio_file', blob, file.originalname);
+
+        axios({
+          method: 'post',
+          url: SPEECH_TO_TEXT_URL,
+          data: formData,
           family: 4,
-          timeout: 30000,
-          headers: formData.getHeaders(),
-        };
+        }).then(async (response) => {
+          const userTranscription = response.data.transcription;
+          console.log('Transcription:', userTranscription);
+          const story = await StoryGenerator.generateStory(userTranscription, userId, storyId);
+          console.log("Inside audio story generate", story);
+          resolve(story);
+        })
 
-        const request = https.request(options, (response) => {
-          let data = '';
-
-          response.on('data', (chunk) => {
-            data += chunk;
-          });
-
-          response.on('end', async () => {
-            if (response.statusCode === 200) {
-              try {
-                const responseData = JSON.parse(data);
-                userTranscription = responseData.transcription;
-                console.log('Transcription:', userTranscription);
-                resolve(StoryGenerator.generateStory(userTranscription, userId, storyId));
-              } catch (err) {
-                console.error('Error:', err);
-                reject(new Error('Error processing transcript'));
-              }
-            } else {
-              console.error('Error generating transcript:', data);
-              reject(new Error('Error generating transcript'));
-            }
-          });
-        });
-
-        request.on('error', (err) => {
-          console.error('Error generating transcript:', err);
-          reject(new Error('Server error'));
-        });
-
-        // request.write(file);
-        // request.end();
-        formData.pipe(request);
-
-        request.end();
       } catch (err) {
         console.error('Error generating transcript:', err);
         reject(new Error('Error generating transcript'));

@@ -9,6 +9,7 @@ const users = require('./modules/users');
 const jwt = require('jsonwebtoken');
 const cookieParser = require('cookie-parser');
 const StoryGenerator = require('./modules/storyGenerator');
+const GenerateFile = require('./modules/generateFile');
 const Story = require('./modules/story');
 const multer = require('multer');
 
@@ -188,8 +189,10 @@ router.get('/stories', verifyJWT, async (req, res) => {
 router.post('/voicegenerate', upload.single('audio_file'), async (req, res) => {
   const { storyId } = req.body;
   const userId = 2; // TODO: CHANGE THIS TO req.user.id WHEN ITS WORKING
-  try {
+  try {  
+    // GenerateFile.saveAudioFile(req);
     const story = await StoryGenerator.generateStoryFromAudio(req.file, userId, storyId);
+    console.log("story inside voicegenerate", story);
     res.json(story);
   } catch (err) {
     console.error('Error retrieving stories:', err);

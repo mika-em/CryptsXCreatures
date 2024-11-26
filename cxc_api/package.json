@@ -10,6 +10,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "axios": "^1.7.7",
     "bcryptjs": "^2.4.3",
     "blob-polyfill": "^9.0.20240710",
     "cookie-parser": "^1.4.7",

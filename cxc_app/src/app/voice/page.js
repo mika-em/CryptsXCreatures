@@ -86,11 +86,14 @@ export default function StoryPage() {
 
             // const response = await fetch("https://cheryl-lau.com/cxc/api/voicegenerate", {
             const response = await fetch("http://localhost:3000/cxc/api/voicegenerate", {
+                // const response = await fetch("https://mumulumu.com/speech2text", {
                 method: 'POST',
                 body: formData
             });
 
+            console.log(response);
             const story = await response.json();
+
 
             setGeneratedText(story.response_plain_text);
             setToastMessage('Success!');
