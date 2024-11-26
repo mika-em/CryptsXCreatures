@@ -50,7 +50,7 @@ export default function ContinueStory() {
     try {
       const result = await generateStory(newPrompt, storyId);
       setUpdatedStory(result.text);
-      setNewPrompt(''); 
+      setNewPrompt('');
     } catch (err) {
       console.error('Error generating story:', err.message);
       setError('Failed to generate the next part of the story.');
@@ -72,48 +72,48 @@ export default function ContinueStory() {
       }
       centerContent={true}
     >
-      <div className='flex gap-2'>
-      {story ? (
-        <div className="card  w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
-          <h2 className="text-xl font-bold mb-4">Current Story</h2>
-          <p className="text-base-content text-lg whitespace-pre-line">
-            {story.first_prompt}
-          </p>
-        </div>
-      ) : (
-        <p className="text-error">Story not found. Please try again.</p>
-      )}
+      <div className="flex gap-2">
+        {story ? (
+          <div className="card  w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
+            <h2 className="text-xl font-bold mb-4">Current Story</h2>
+            <p className="text-base-content text-lg whitespace-pre-line">
+              {story.first_prompt}
+            </p>
+          </div>
+        ) : (
+          <p className="text-error">Story not found. Please try again.</p>
+        )}
 
-      <div className="card w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
-        <h2 className="text-xl font-bold mb-4">Add to Your Story</h2>
-        <textarea
-          value={newPrompt}
-          onChange={(e) => setNewPrompt(e.target.value)}
-          placeholder="Enter the next part of your story..."
-          className="textarea text-base-content text-lg w-full mb-4 p-4"
-          rows={5}
-        />
-        <button
-          onClick={handleContinue}
-          className={`btn btn-accent w-full ${loading ? 'btn-disabled' : ''}`}
-          disabled={loading || !newPrompt}
-        >
-          {loading ? (
-            <span className="loading loading-lg loading-infinity"></span>
-          ) : (
-            'Continue Story'
-          )}
-        </button>
-      </div>
-
-      {updatedStory && (
-        <div className="card w-full max-w-2xl bg-base-100 p-6 shadow-md mt-6">
-          <h2 className="text-xl font-bold mb-4">Updated Story</h2>
-          <p className="text-base-content text-lg whitespace-pre-line">
-            {updatedStory}
-          </p>
+        <div className="card w-[400px] max-w-2xl bg-base-100 p-6 shadow-md mb-6">
+          <h2 className="text-xl font-bold mb-4">Add to Your Story</h2>
+          <textarea
+            value={newPrompt}
+            onChange={(e) => setNewPrompt(e.target.value)}
+            placeholder="Enter the next part of your story..."
+            className="textarea text-base-content text-lg w-full mb-4 p-4"
+            rows={5}
+          />
+          <button
+            onClick={handleContinue}
+            className={`btn btn-accent w-full ${loading ? 'btn-disabled' : ''}`}
+            disabled={loading || !newPrompt}
+          >
+            {loading ? (
+              <span className="loading loading-lg loading-infinity"></span>
+            ) : (
+              'Continue Story'
+            )}
+          </button>
         </div>
-      )}
+
+        {updatedStory && (
+          <div className="card w-full max-w-2xl bg-base-100 p-6 shadow-md mt-6">
+            <h2 className="text-xl font-bold mb-4">Updated Story</h2>
+            <p className="text-base-content text-lg whitespace-pre-line">
+              {updatedStory}
+            </p>
+          </div>
+        )}
       </div>
     </PageWrapper>
   );

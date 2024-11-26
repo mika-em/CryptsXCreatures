@@ -44,7 +44,7 @@ export async function makeMultipartRequest(endpoint, method, data = null) {
       const errorData = await res.json();
       error = errorData.message || JSON.stringify(errorData);
     } else {
-    error = await res.text();
+      error = await res.text();
     }
     throw new Error(error);
   }

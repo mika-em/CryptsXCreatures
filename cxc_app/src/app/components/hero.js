@@ -27,7 +27,7 @@ export default function HeroSection() {
           masterpiece.
         </p>
         <Link
-           href={authenticated ? '/story' : '/login'}
+          href={authenticated ? '/story' : '/login'}
           className="btn btn-accent btn-sm text-sm md:text-md font-bold hover:scale-105 transition-all"
           style={{ lineHeight: '1', textAlign: 'center' }}
         >

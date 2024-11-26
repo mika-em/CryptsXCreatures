@@ -13,7 +13,12 @@ export default function AdminPage() {
   const [dataLoading, setDataLoading] = useState(true);
   const [dataError, setDataError] = useState(null);
 
-  const { authenticated, isAdmin, loading: authLoading, error: authError } = useAuthContext();
+  const {
+    authenticated,
+    isAdmin,
+    loading: authLoading,
+    error: authError,
+  } = useAuthContext();
   const router = useRouter();
 
   useEffect(() => {
@@ -44,7 +49,7 @@ export default function AdminPage() {
   }
 
   if (dataError || authError) {
-    router.push('/error/500'); 
+    router.push('/error/500');
     return null;
   }
 

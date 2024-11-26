@@ -24,7 +24,7 @@ export default function LoginPage() {
 
     try {
       const { role } = await login({ email, password });
-      await updateAuthStatus(true, role); 
+      await updateAuthStatus(true, role);
       router.push('/');
     } catch (err) {
       console.error('Login failed:', err.message);

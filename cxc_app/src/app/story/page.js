@@ -69,14 +69,16 @@ export default function StoryPage() {
             placeholder="Type your story prompt here..."
             value={storyContent || prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            required={!storyContent} 
+            required={!storyContent}
             aria-label="Story input"
             disabled={loadingStory || !!storyContent}
           />
           <button
             type="submit"
             className={`btn btn-accent w-full mb-4 ${
-              loadingStory || !!storyContent ? 'opacity-75 cursor-not-allowed' : ''
+              loadingStory || !!storyContent
+                ? 'opacity-75 cursor-not-allowed'
+                : ''
             }`}
             disabled={loadingStory || !!storyContent}
           >
