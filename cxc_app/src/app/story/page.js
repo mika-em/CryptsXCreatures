@@ -37,14 +37,19 @@ export default function StoryPage() {
       const response = await generateStory(prompt, storyId);
 
       if (response?.text) {
-        setStory(response.history);
-        setStoryId(response.storyId);
+        const newStoryPart = `${prompt} ${response.text}`;
+        setStory((prevStory) =>
+          prevStory ? `${prevStory} ${newStoryPart}` : newStoryPart
+        );
+        if (!storyId) {
+          setStoryId(response.storyId);
+        }
         setPrompt('');
       } else {
         throw new Error('Invalid response from the server');
       }
     } catch (e) {
-      setError('Error. Please try again.');
+      setError('There was an issue generating the story. Please try again.');
     } finally {
       setLoadingStory(false);
     }
