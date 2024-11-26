@@ -97,15 +97,16 @@ class Users {
         }
         if (results.length > 0) {
           const user = results[0];
-          const match = await bcrypt.compare(password, user.password); 
+          const match = await bcrypt.compare(password, user.password);
           if (match) {
             const token = this.generateJWT(user);
-            resolve({ email: user.email, token });
+            console.log('User logged in:', user.role);
+            resolve({ email: user.email, role: user.role, token });
           } else {
-            reject(new Error('Invalid email or password 1'));
+            reject(new Error('Invalid email or password'));
           }
         } else {
-          reject(new Error('Invalid email or password 2'));
+          reject(new Error('Invalid email or password'));
         }
       });
     });

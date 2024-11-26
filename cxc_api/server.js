@@ -75,9 +75,9 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
   try {
-    const { email: userEmail, token } = await users.login(email, password);
+    const { email: userEmail, role, token } = await users.login(email, password);
     Utils.setCookie(res, "token", token);
-    res.json({ email: userEmail });
+    res.json({ email: userEmail, role });
   } catch (err) {
     console.error("Error logging in:", err);
     res.status(401).send("Invalid email or password");
