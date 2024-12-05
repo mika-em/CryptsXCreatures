@@ -20,7 +20,7 @@ Crypts X Creatures (CXC) is an interactive storytelling platform powered by AI. 
 
 ## Tech Stack 🛠️
 
-- **Frontend**: Next.js (React), hosted on Vercel. ✨
+- **Frontend**: Next.js (React), Tailwind, hosted on Vercel. ✨
 - **Backend**: Node.js with Express
 - **Authentication**: JWT for secure login and user role management. 🔒
 - **Hosting**: Vercel and GlowHost 🚀
